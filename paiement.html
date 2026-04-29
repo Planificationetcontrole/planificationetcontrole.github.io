@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Paiement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Paiement du cours premium</h1>
+
+<form id="paymentForm">
+  <label>Numéro de carte :</label>
+  <input type="text" id="cardNumber"><br>
+
+  <label>Nom :</label>
+  <input type="text" id="name"><br>
+
+  <label>Date d'expiration :</label>
+  <input type="text" id="expiry"><br>
+
+  <label>CVV :</label>
+  <input type="text" id="cvv"><br><br>
+
+  <button type="button" onclick="fakePayment()">Payer</button>
+</form>
+
+<p id="status"></p>
+
+<script src="script.js"></script>
+
+</body>
+</html>
