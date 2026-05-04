@@ -2,16 +2,208 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Mon Site de Cours</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlanControl Academy — Master 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Bienvenue sur mon site de cours</h1>
-
-  <h2>Cours gratuits</h2>
-  <a href="cours.html">Accéder aux cours gratuits</a>
-
-  <h2>Cours premium</h2>
-  <a href="paiement.html">Accéder aux cours payants</a>
+ 
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Plan<span>Control</span> Academy</a>
+      <ul class="nav-links">
+        <li><a href="#cours">Cours</a></li>
+        <li><a href="#premium">Premium</a></li>
+        <li><a href="#apropos">À propos</a></li>
+      </ul>
+    </div>
+  </nav>
+ 
+  <header class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <span class="hero-badge">Master 1 · Gestion de projet</span>
+      <h1>Planification<br><em>& Contrôle</em></h1>
+      <p class="hero-sub">Maîtrisez les outils fondamentaux de la gestion de projet : budgets, Gantt et MPM. Des cours structurés, des exercices pratiques, des vidéos claires.</p>
+      <div class="hero-cta">
+        <a href="#cours" class="btn btn-primary">Découvrir les cours</a>
+        <a href="#premium" class="btn btn-ghost">Formule Premium ↗</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card card-1">
+        <span class="card-icon">📊</span>
+        <span>Budgets</span>
+      </div>
+      <div class="floating-card card-2">
+        <span class="card-icon">📅</span>
+        <span>Gantt</span>
+      </div>
+      <div class="floating-card card-3">
+        <span class="card-icon">🔗</span>
+        <span>MPM</span>
+      </div>
+      <div class="hero-orb"></div>
+    </div>
+  </header>
+ 
+  <section class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat"><strong>3</strong><span>Modules complets</span></div>
+      <div class="stat"><strong>6</strong><span>Exercices pratiques</span></div>
+      <div class="stat"><strong>3</strong><span>Mini-vidéos</span></div>
+      <div class="stat"><strong>M1</strong><span>Niveau Master</span></div>
+    </div>
+  </section>
+ 
+  <section id="cours" class="courses-section">
+    <div class="section-header">
+      <span class="section-tag">Accès libre</span>
+      <h2>Cours gratuits</h2>
+      <p>Trois modules essentiels pour maîtriser la planification et le contrôle en gestion de projet</p>
+    </div>
+ 
+    <div class="courses-grid">
+ 
+      <article class="course-card">
+        <div class="course-card-top" style="--accent:#2563EB">
+          <div class="course-number">01</div>
+          <div class="course-icon">📊</div>
+          <div class="course-tags">
+            <span>Budgétisation</span>
+            <span>Finance</span>
+          </div>
+        </div>
+        <div class="course-card-body">
+          <h3>Articulation Budgétaire</h3>
+          <p>Comprenez la structure des budgets prévisionnels, leur articulation dans le contrôle de gestion et les mécanismes de suivi des écarts.</p>
+          <div class="course-meta">
+            <span>📄 Fiche de synthèse</span>
+            <span>✏️ 2 exercices</span>
+            <span>🎬 Vidéo</span>
+          </div>
+          <a href="cours-budget.html" class="btn btn-course">Accéder au cours →</a>
+        </div>
+      </article>
+ 
+      <article class="course-card">
+        <div class="course-card-top" style="--accent:#059669">
+          <div class="course-number">02</div>
+          <div class="course-icon">📅</div>
+          <div class="course-tags">
+            <span>Planification</span>
+            <span>Temps</span>
+          </div>
+        </div>
+        <div class="course-card-body">
+          <h3>Matrice GANTT</h3>
+          <p>Apprenez à construire et interpréter un diagramme de Gantt pour planifier les tâches, gérer les ressources et visualiser l'avancement d'un projet.</p>
+          <div class="course-meta">
+            <span>📄 Fiche de synthèse</span>
+            <span>✏️ 2 exercices</span>
+            <span>🎬 Vidéo</span>
+          </div>
+          <a href="cours-gantt.html" class="btn btn-course">Accéder au cours →</a>
+        </div>
+      </article>
+ 
+      <article class="course-card">
+        <div class="course-card-top" style="--accent:#7C3AED">
+          <div class="course-number">03</div>
+          <div class="course-icon">🔗</div>
+          <div class="course-tags">
+            <span>Réseau</span>
+            <span>Chemin critique</span>
+          </div>
+        </div>
+        <div class="course-card-body">
+          <h3>Méthode MPM</h3>
+          <p>Maîtrisez la méthode des potentiels Metra (MPM) pour modéliser les dépendances entre tâches et identifier le chemin critique d'un projet.</p>
+          <div class="course-meta">
+            <span>📄 Fiche de synthèse</span>
+            <span>✏️ 2 exercices</span>
+            <span>🎬 Vidéo</span>
+          </div>
+          <a href="cours-mpm.html" class="btn btn-course">Accéder au cours →</a>
+        </div>
+      </article>
+ 
+    </div>
+  </section>
+ 
+  <section id="premium" class="premium-section">
+    <div class="premium-inner">
+      <div class="premium-text">
+        <span class="section-tag premium-tag">Exclusif</span>
+        <h2>Formule <em>Premium</em></h2>
+        <p>Allez plus loin avec des séances en physique accompagnées par un professeur expert. Bénéficiez d'un suivi personnalisé et de ressources exclusives pour chaque module.</p>
+        <ul class="premium-features">
+          <li>✅ Séances en présentiel avec un professeur</li>
+          <li>✅ Correction détaillée de vos exercices</li>
+          <li>✅ Ressources exclusives & études de cas réels</li>
+          <li>✅ Accès prioritaire aux nouveaux contenus</li>
+          <li>✅ Certificat de complétion</li>
+        </ul>
+        <a href="paiement.html" class="btn btn-premium">Accéder au Premium — 49€</a>
+      </div>
+      <div class="premium-visual">
+        <div class="premium-card">
+          <div class="pc-header">
+            <span>👨‍🏫</span>
+            <div>
+              <strong>Cours en physique</strong>
+              <small>Professeur dédié</small>
+            </div>
+          </div>
+          <div class="pc-modules">
+            <div class="pc-module"><span style="color:#2563EB">●</span> Articulation Budgétaire</div>
+            <div class="pc-module"><span style="color:#059669">●</span> Matrice GANTT</div>
+            <div class="pc-module"><span style="color:#7C3AED">●</span> Méthode MPM</div>
+          </div>
+          <div class="pc-badge">Premium</div>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <section id="apropos" class="about-section">
+    <div class="about-inner">
+      <span class="section-tag">À propos</span>
+      <h2>Conçu pour les étudiants de Master</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <span class="about-icon">🎯</span>
+          <h4>Objectif pédagogique</h4>
+          <p>Des contenus pensés pour les étudiants M1, axés sur la pratique et l'application concrète des méthodes.</p>
+        </div>
+        <div class="about-card">
+          <span class="about-icon">📚</span>
+          <h4>Ressources structurées</h4>
+          <p>Fiches de synthèse, exercices progressifs et vidéos explicatives pour chaque thème abordé.</p>
+        </div>
+        <div class="about-card">
+          <span class="about-icon">🚀</span>
+          <h4>Progression rapide</h4>
+          <p>Chaque module est autonome et peut être suivi à son propre rythme, en complément des cours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">Plan<span>Control</span> Academy</div>
+      <p>Plateforme de formation — Projet académique M1</p>
+      <div class="footer-links">
+        <a href="cours-budget.html">Budget</a>
+        <a href="cours-gantt.html">Gantt</a>
+        <a href="cours-mpm.html">MPM</a>
+        <a href="paiement.html">Premium</a>
+      </div>
+    </div>
+  </footer>
+ 
 </body>
 </html>
