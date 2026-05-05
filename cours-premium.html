@@ -2,19 +2,1294 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Cours premium</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Premium — PlanControl Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===========================================================
+       Page Premium — styles spécifiques
+       =========================================================== */
+
+    /* Hero premium avec confettis */
+    .premium-hero {
+      position: relative;
+      padding: 130px 32px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+      overflow: visible;
+    }
+    .premium-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(239,68,68,0.12));
+      border: 1px solid rgba(245,158,11,0.35);
+      color: var(--accent-gold);
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .premium-hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin-bottom: 18px;
+    }
+    .premium-hero h1 em {
+      font-style: italic;
+      background: linear-gradient(135deg, #F59E0B, #EF4444);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .premium-hero p.welcome-msg {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0 auto 28px;
+    }
+    .order-id {
+      display: inline-block;
+      font-family: 'DM Sans', monospace;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Confettis CSS */
+    .confetti-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      top: -20px;
+      animation: confetti-fall linear forwards;
+    }
+    @keyframes confetti-fall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Parcours premium (steps overview) */
+    .journey-section {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 32px;
+    }
+    .journey-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .journey-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .journey-card.done {
+      background: rgba(16,185,129,0.06);
+      border-color: rgba(16,185,129,0.25);
+    }
+    .journey-card.current {
+      background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.04));
+      border-color: rgba(245,158,11,0.35);
+    }
+    .journey-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .journey-card.done .journey-num { color: var(--accent-green); }
+    .journey-card.done .journey-num::before { content: '✓'; font-size: 1rem; }
+    .journey-card.current .journey-num { color: var(--accent-gold); }
+    .journey-card.current .journey-num::before { content: '→'; font-size: 1rem; }
+    .journey-card h4 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+    .journey-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Section commune */
+    .premium-block {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 32px;
+    }
+    .block-header {
+      margin-bottom: 32px;
+      max-width: 700px;
+    }
+    .block-header.center { margin: 0 auto 32px; text-align: center; }
+    .block-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+    .block-header p {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    /* Booking — système de réservation */
+    .booking-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .booking-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #F59E0B, #EF4444);
+    }
+
+    .booking-step {
+      margin-bottom: 32px;
+    }
+    .booking-step:last-of-type { margin-bottom: 0; }
+    .step-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .step-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.4);
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+    }
+    .step-helper {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    /* Choix module */
+    .module-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .module-opt {
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+    }
+    .module-opt:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); }
+    .module-opt.selected {
+      border-color: var(--accent-gold);
+      background: rgba(245,158,11,0.06);
+    }
+    .module-opt .mo-icon { font-size: 1.6rem; margin-bottom: 8px; display: block; }
+    .module-opt .mo-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+    .module-opt .mo-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* Sélection de date */
+    .date-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+      gap: 10px;
+    }
+    .date-opt {
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+    }
+    .date-opt:hover { border-color: rgba(255,255,255,0.18); }
+    .date-opt.selected {
+      border-color: var(--accent-gold);
+      background: rgba(245,158,11,0.06);
+    }
+    .date-opt .do-day {
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .date-opt .do-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+    .date-opt .do-month {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+    .date-opt.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Sélection de créneau */
+    .slot-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+    }
+    .slot-opt {
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.92rem;
+      text-align: center;
+    }
+    .slot-opt:hover { border-color: rgba(255,255,255,0.18); }
+    .slot-opt.selected {
+      border-color: var(--accent-gold);
+      background: rgba(245,158,11,0.06);
+      color: var(--accent-gold);
+    }
+    .slot-opt.taken {
+      opacity: 0.35;
+      pointer-events: none;
+      text-decoration: line-through;
+    }
+
+    /* Format */
+    .format-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .format-opt {
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+    }
+    .format-opt:hover { border-color: rgba(255,255,255,0.18); }
+    .format-opt.selected {
+      border-color: var(--accent-gold);
+      background: rgba(245,158,11,0.06);
+    }
+    .format-opt .fo-icon {
+      font-size: 1.7rem;
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .format-opt .fo-name { font-weight: 600; font-size: 0.95rem; }
+    .format-opt .fo-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* Récap & confirm */
+    .booking-recap {
+      background: rgba(245,158,11,0.04);
+      border: 1px dashed rgba(245,158,11,0.3);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-top: 24px;
+      display: none;
+    }
+    .booking-recap.show { display: block; animation: slideDown 0.4s ease; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .recap-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 0.92rem;
+    }
+    .recap-row + .recap-row { border-top: 1px solid rgba(255,255,255,0.06); }
+    .recap-label { color: var(--text-muted); }
+    .recap-value { color: var(--text); font-weight: 500; }
+
+    .btn-confirm-booking {
+      width: 100%;
+      background: linear-gradient(135deg, #F59E0B, #EF4444);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-confirm-booking:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(245,158,11,0.4);
+    }
+    .btn-confirm-booking:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Confirmation finale */
+    .confirmation-state {
+      display: none;
+      text-align: center;
+      padding: 30px 20px;
+    }
+    .confirmation-state.show {
+      display: block;
+      animation: zoomIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .conf-icon {
+      width: 64px; height: 64px;
+      background: rgba(16,185,129,0.15);
+      border: 2px solid var(--accent-green);
+      color: var(--accent-green);
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+    .conf-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+    .conf-text {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    .conf-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      max-width: 380px;
+      margin: 0 auto 20px;
+      text-align: left;
+    }
+    .conf-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* Carte du professeur */
+    .teacher-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 28px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .teacher-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 60%);
+      transform: translate(40%, -40%);
+      pointer-events: none;
+    }
+    .teacher-avatar {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563EB, #7C3AED);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.4rem;
+      color: #fff;
+      flex-shrink: 0;
+      border: 3px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 30px rgba(37,99,235,0.3);
+    }
+    .teacher-info h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .teacher-verified {
+      width: 22px; height: 22px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.75rem;
+    }
+    .teacher-role {
+      color: var(--accent-gold);
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    .teacher-bio {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      max-width: 540px;
+    }
+    .teacher-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .teacher-tags span {
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: #93C5FD;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    /* Ressources premium */
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .resource-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .resource-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(245,158,11,0.3);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .resource-icon {
+      width: 44px; height: 44px;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .resource-card h4 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+    .resource-card p {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .resource-meta {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .resource-meta::before {
+      content: '⬇';
+      color: var(--accent-blue);
+    }
+
+    /* Add-ons section */
+    .addons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .addon-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .addon-card.featured {
+      border-color: rgba(245,158,11,0.4);
+      background: linear-gradient(180deg, rgba(245,158,11,0.05) 0%, var(--surface) 100%);
+    }
+    .addon-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .addon-tag {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: linear-gradient(135deg, #F59E0B, #EF4444);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .addon-icon {
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+    .addon-card h4 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+    }
+    .addon-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.55;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+    .addon-features {
+      list-style: none;
+      margin-bottom: 18px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .addon-features li {
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .addon-features li::before {
+      content: '✓';
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+    .addon-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .addon-price {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent-gold);
+    }
+    .addon-price small {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .btn-addon {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+      color: var(--accent-gold);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-addon:hover {
+      background: rgba(245,158,11,0.2);
+    }
+    .btn-addon.added {
+      background: rgba(16,185,129,0.15);
+      border-color: rgba(16,185,129,0.3);
+      color: var(--accent-green);
+    }
+
+    /* Support CTA */
+    .support-cta {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 32px;
+      text-align: center;
+    }
+    .support-cta-inner {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .support-cta h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+    .support-cta p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .support-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .journey-grid { grid-template-columns: repeat(2, 1fr); }
+      .module-options { grid-template-columns: 1fr; }
+      .format-options { grid-template-columns: 1fr; }
+      .teacher-card { grid-template-columns: 1fr; text-align: center; }
+      .teacher-tags { justify-content: center; }
+    }
+  </style>
 </head>
 <body>
 
-<h1>🎉 Cours Premium</h1>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Plan<span>Control</span> Academy</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#cours">Cours</a></li>
+        <li><a href="#booking">Mes séances</a></li>
+        <li><a href="#resources">Ressources</a></li>
+      </ul>
+    </div>
+  </nav>
 
-<ul>
-  <li>JavaScript avancé</li>
-  <li>React</li>
-  <li>Backend Node.js</li>
-</ul>
+  <div class="hero-bg"></div>
 
-<a href="index.html">Retour</a>
+  <!-- Hero avec confettis -->
+  <header class="premium-hero">
+    <div class="confetti-container" id="confetti"></div>
+    <span class="premium-hero-badge">✨ Premium activé</span>
+    <h1>Bienvenue dans<br><em>l'expérience Premium</em></h1>
+    <p class="welcome-msg">Votre paiement de 49€ a été confirmé. Vous avez désormais accès à toutes les ressources avancées et à votre professeur dédié. Commencez par réserver votre première séance.</p>
+    <div class="order-id" id="orderId">N° commande : PCA-2026-XXXXX</div>
+  </header>
+
+  <!-- Parcours premium (4 étapes) -->
+  <section class="journey-section">
+    <div class="journey-grid">
+      <div class="journey-card done">
+        <div class="journey-num">Étape 1</div>
+        <h4>Paiement validé</h4>
+        <p>Votre accès Premium est activé pour 12 mois.</p>
+      </div>
+      <div class="journey-card current">
+        <div class="journey-num">Étape 2</div>
+        <h4>Réservez votre séance</h4>
+        <p>1h en visio ou présentiel avec un professeur.</p>
+      </div>
+      <div class="journey-card">
+        <div class="journey-num">Étape 3</div>
+        <h4>Téléchargez les ressources</h4>
+        <p>Templates, annales, études de cas réels.</p>
+      </div>
+      <div class="journey-card">
+        <div class="journey-num">Étape 4</div>
+        <h4>Obtenez votre certificat</h4>
+        <p>Diplôme reconnu à partager sur LinkedIn.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Réservation interactive -->
+  <section id="booking" class="premium-block">
+    <div class="block-header">
+      <span class="section-tag premium-tag">Réservation</span>
+      <h2>Programmez votre <em style="color: var(--accent-gold); font-style: italic;">séance privée</em></h2>
+      <p>1h en tête-à-tête avec votre professeur dédié, focalisée sur le module de votre choix.</p>
+    </div>
+
+    <div class="booking-card">
+      <div id="bookingFlow">
+
+        <!-- Étape 1 : Module -->
+        <div class="booking-step">
+          <div class="step-label">
+            <div class="step-num">1</div>
+            <div class="step-title">Choisissez votre module</div>
+          </div>
+          <div class="module-options">
+            <div class="module-opt" data-value="Articulation Budgétaire" data-color="#2563EB">
+              <span class="mo-icon">📊</span>
+              <div class="mo-name">Budget</div>
+              <div class="mo-desc">Articulation budgétaire & écarts</div>
+            </div>
+            <div class="module-opt" data-value="Matrice GANTT" data-color="#059669">
+              <span class="mo-icon">📅</span>
+              <div class="mo-name">Gantt</div>
+              <div class="mo-desc">Planification visuelle des tâches</div>
+            </div>
+            <div class="module-opt" data-value="Méthode MPM" data-color="#7C3AED">
+              <span class="mo-icon">🔗</span>
+              <div class="mo-name">MPM</div>
+              <div class="mo-desc">Réseau & chemin critique</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Étape 2 : Date -->
+        <div class="booking-step">
+          <div class="step-label">
+            <div class="step-num">2</div>
+            <div class="step-title">Choisissez une date</div>
+            <div class="step-helper">7 prochains jours ouvrés</div>
+          </div>
+          <div class="date-options" id="dateOptions">
+            <!-- Généré en JS -->
+          </div>
+        </div>
+
+        <!-- Étape 3 : Créneau -->
+        <div class="booking-step">
+          <div class="step-label">
+            <div class="step-num">3</div>
+            <div class="step-title">Choisissez un créneau</div>
+            <div class="step-helper">Durée : 60 min</div>
+          </div>
+          <div class="slot-options" id="slotOptions">
+            <div class="slot-opt" data-value="09:00">09:00</div>
+            <div class="slot-opt" data-value="10:30">10:30</div>
+            <div class="slot-opt taken" data-value="12:00">12:00</div>
+            <div class="slot-opt" data-value="14:00">14:00</div>
+            <div class="slot-opt" data-value="15:30">15:30</div>
+            <div class="slot-opt taken" data-value="17:00">17:00</div>
+            <div class="slot-opt" data-value="18:30">18:30</div>
+          </div>
+        </div>
+
+        <!-- Étape 4 : Format -->
+        <div class="booking-step">
+          <div class="step-label">
+            <div class="step-num">4</div>
+            <div class="step-title">Choisissez le format</div>
+          </div>
+          <div class="format-options">
+            <div class="format-opt" data-value="Visioconférence">
+              <div class="fo-icon">💻</div>
+              <div>
+                <div class="fo-name">Visioconférence</div>
+                <div class="fo-desc">Lien Zoom envoyé par mail</div>
+              </div>
+            </div>
+            <div class="format-opt" data-value="Présentiel">
+              <div class="fo-icon">🏛️</div>
+              <div>
+                <div class="fo-name">Présentiel</div>
+                <div class="fo-desc">Sur le campus de l'université</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Récapitulatif -->
+        <div class="booking-recap" id="bookingRecap">
+          <div class="recap-row">
+            <span class="recap-label">Module</span>
+            <span class="recap-value" id="recapModule">—</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">Date</span>
+            <span class="recap-value" id="recapDate">—</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">Horaire</span>
+            <span class="recap-value" id="recapSlot">—</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">Format</span>
+            <span class="recap-value" id="recapFormat">—</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">Professeur</span>
+            <span class="recap-value">M. Antoine Lefèvre</span>
+          </div>
+        </div>
+
+        <button class="btn-confirm-booking" id="btnConfirmBooking" disabled>
+          Confirmer la réservation
+        </button>
+      </div>
+
+      <!-- État final : confirmation -->
+      <div class="confirmation-state" id="confirmationState">
+        <div class="conf-icon">✓</div>
+        <div class="conf-title">Séance confirmée !</div>
+        <p class="conf-text">Un récapitulatif vous a été envoyé par email.</p>
+
+        <div class="conf-card">
+          <div class="recap-row">
+            <span class="recap-label">📚 Module</span>
+            <span class="recap-value" id="finalModule">—</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">📅 Date</span>
+            <span class="recap-value" id="finalDate">—</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">🕐 Horaire</span>
+            <span class="recap-value" id="finalSlot">—</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">📍 Format</span>
+            <span class="recap-value" id="finalFormat">—</span>
+          </div>
+        </div>
+
+        <div class="conf-actions">
+          <button class="btn-secondary" id="btnNewBooking">↻ Réserver une autre séance</button>
+          <a href="#resources" class="btn-secondary">📚 Voir les ressources</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Carte du professeur -->
+  <section class="premium-block">
+    <div class="block-header">
+      <span class="section-tag premium-tag">Votre professeur</span>
+      <h2>Un expert à vos côtés</h2>
+    </div>
+
+    <div class="teacher-card">
+      <div class="teacher-avatar">AL</div>
+      <div class="teacher-info">
+        <h3>Antoine Lefèvre <span class="teacher-verified">✓</span></h3>
+        <div class="teacher-role">Consultant en gestion de projet · 12 ans d'expérience</div>
+        <p class="teacher-bio">Ancien chef de projet chez Capgemini et formateur à HEC Executive Education, Antoine accompagne les étudiants dans la maîtrise opérationnelle des outils de planification. Il privilégie une approche par cas réels issus de ses missions terrain.</p>
+        <div class="teacher-tags">
+          <span>Certifié PMP</span>
+          <span>PRINCE2 Practitioner</span>
+          <span>HEC Paris</span>
+          <span>Auteur · Editions Eyrolles</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ressources premium -->
+  <section id="resources" class="premium-block">
+    <div class="block-header">
+      <span class="section-tag premium-tag">Ressources débloquées</span>
+      <h2>Votre bibliothèque Premium</h2>
+      <p>Tous les supports avancés, accessibles dès maintenant.</p>
+    </div>
+
+    <div class="resources-grid">
+      <div class="resource-card">
+        <div class="resource-icon">📊</div>
+        <div>
+          <h4>Templates Excel — Budgets</h4>
+          <p>5 modèles prêts à l'emploi : budget prévisionnel, suivi des écarts, tableau de bord.</p>
+          <div class="resource-meta">XLSX · 2,4 Mo</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-icon">📅</div>
+        <div>
+          <h4>Modèles Gantt avancés</h4>
+          <p>Templates avec ressources, dépendances et chemin critique automatisé.</p>
+          <div class="resource-meta">XLSX + MPP · 3,1 Mo</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-icon">🔗</div>
+        <div>
+          <h4>Cas d'études MPM</h4>
+          <p>10 problèmes corrigés inspirés de projets industriels réels.</p>
+          <div class="resource-meta">PDF · 4,8 Mo</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-icon">📄</div>
+        <div>
+          <h4>Annales corrigées M1</h4>
+          <p>Sujets d'examen des 5 dernières années avec corrigés détaillés.</p>
+          <div class="resource-meta">PDF · 6,2 Mo</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-icon">🎬</div>
+        <div>
+          <h4>Vidéos approfondies</h4>
+          <p>12 vidéos avancées (45 min chacune) sur les notions complexes.</p>
+          <div class="resource-meta">MP4 · Streaming HD</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-icon">📘</div>
+        <div>
+          <h4>Lexique pro</h4>
+          <p>Glossaire bilingue FR/EN de 250 termes de gestion de projet.</p>
+          <div class="resource-meta">PDF · 1,1 Mo</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add-ons : autres options de paiement cohérentes -->
+  <section class="premium-block">
+    <div class="block-header center">
+      <span class="section-tag premium-tag">Allez plus loin</span>
+      <h2>Personnalisez votre Premium</h2>
+      <p>Des options additionnelles pour aller au bout de votre apprentissage.</p>
+    </div>
+
+    <div class="addons-grid">
+      <div class="addon-card featured">
+        <span class="addon-tag">Le + populaire</span>
+        <div class="addon-icon">🎯</div>
+        <h4>Coaching examen final</h4>
+        <p>Préparez-vous sereinement à votre examen de M1.</p>
+        <ul class="addon-features">
+          <li>3 séances de révision ciblées</li>
+          <li>Simulation d'examen blanc</li>
+          <li>Correction personnalisée</li>
+        </ul>
+        <div class="addon-footer">
+          <div class="addon-price">39€<small> /unique</small></div>
+          <button class="btn-addon" data-addon="coaching">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div class="addon-card">
+        <div class="addon-icon">🎓</div>
+        <h4>Certificat LinkedIn</h4>
+        <p>Diplôme PDF officiel et badge à afficher sur votre profil professionnel.</p>
+        <ul class="addon-features">
+          <li>Certificat numérique signé</li>
+          <li>Badge LinkedIn vérifié</li>
+          <li>Reconnu par nos partenaires</li>
+        </ul>
+        <div class="addon-footer">
+          <div class="addon-price">15€<small> /unique</small></div>
+          <button class="btn-addon" data-addon="certif">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div class="addon-card">
+        <div class="addon-icon">📦</div>
+        <h4>Pack templates avancés</h4>
+        <p>Boîte à outils pro : 25 modèles Excel & Project utilisés en entreprise.</p>
+        <ul class="addon-features">
+          <li>25 templates premium</li>
+          <li>Macros automatisées</li>
+          <li>Mises à jour à vie</li>
+        </ul>
+        <div class="addon-footer">
+          <div class="addon-price">25€<small> /unique</small></div>
+          <button class="btn-addon" data-addon="templates">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div class="addon-card">
+        <div class="addon-icon">🤝</div>
+        <h4>Mentorat mensuel</h4>
+        <p>Un suivi personnalisé sur la durée pour ne jamais rester bloqué.</p>
+        <ul class="addon-features">
+          <li>1h de mentorat / mois</li>
+          <li>Chat illimité avec le prof</li>
+          <li>Sans engagement</li>
+        </ul>
+        <div class="addon-footer">
+          <div class="addon-price">19€<small> /mois</small></div>
+          <button class="btn-addon" data-addon="mentorat">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Support -->
+  <section class="support-cta">
+    <div class="support-cta-inner">
+      <h3>Besoin d'aide pour démarrer ?</h3>
+      <p>Notre équipe pédagogique est joignable 7j/7 pour répondre à vos questions.</p>
+      <div class="support-actions">
+        <a href="mailto:contact@plancontrol-academy.fr" class="btn btn-ghost">📧 Nous écrire</a>
+        <a href="index.html#cours" class="btn btn-primary">Retour aux cours</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">Plan<span>Control</span> Academy</div>
+      <p>Plateforme de formation — Projet académique M1</p>
+      <div class="footer-links">
+        <a href="index.html">Accueil</a>
+        <a href="cours-budget.html">Budget</a>
+        <a href="cours-gantt.html">Gantt</a>
+        <a href="cours-mpm.html">MPM</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+/* =========================================================
+   Page Premium — JS
+   ========================================================= */
+
+// 1) Confettis à l'arrivée
+(function spawnConfetti() {
+  const container = document.getElementById('confetti');
+  const colors = ['#F59E0B', '#3B82F6', '#10B981', '#8B5CF6', '#EF4444'];
+  const count = 60;
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDuration = (2.5 + Math.random() * 2.5) + 's';
+    c.style.animationDelay = (Math.random() * 0.8) + 's';
+    c.style.transform = `rotate(${Math.random() * 360}deg)`;
+    if (Math.random() > 0.5) c.style.borderRadius = '50%';
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 6000);
+  }
+})();
+
+// 2) Numéro de commande aléatoire
+(function generateOrderId() {
+  const id = Math.floor(10000 + Math.random() * 90000);
+  document.getElementById('orderId').textContent = `N° commande : PCA-2026-${id}`;
+})();
+
+// 3) Génération des dates (7 prochains jours ouvrés)
+(function generateDates() {
+  const container = document.getElementById('dateOptions');
+  const days   = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
+  const months = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin',
+                  'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+
+  let added = 0;
+  let offset = 1;
+  while (added < 7) {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    offset++;
+    // Skip weekends
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+
+    const opt = document.createElement('div');
+    opt.className = 'date-opt';
+    // Premier jour disponible volontairement marqué occupé pour réalisme
+    if (added === 0) opt.classList.add('disabled');
+
+    const formatted = `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+    opt.dataset.value = formatted;
+    opt.innerHTML = `
+      <div class="do-day">${days[d.getDay()]}</div>
+      <div class="do-num">${d.getDate()}</div>
+      <div class="do-month">${months[d.getMonth()]}</div>
+    `;
+    container.appendChild(opt);
+    added++;
+  }
+})();
+
+// 4) État de la réservation
+const booking = {
+  module: null,
+  date:   null,
+  slot:   null,
+  format: null
+};
+
+function bindGroup(selector, key, recapId) {
+  document.querySelectorAll(selector).forEach(el => {
+    if (el.classList.contains('disabled') || el.classList.contains('taken')) return;
+    el.addEventListener('click', () => {
+      document.querySelectorAll(selector).forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      booking[key] = el.dataset.value;
+      if (recapId) document.getElementById(recapId).textContent = el.dataset.value;
+      checkComplete();
+    });
+  });
+}
+bindGroup('.module-opt', 'module', 'recapModule');
+bindGroup('.date-opt',   'date',   'recapDate');
+bindGroup('.slot-opt',   'slot',   'recapSlot');
+bindGroup('.format-opt', 'format', 'recapFormat');
+
+function checkComplete() {
+  const all = booking.module && booking.date && booking.slot && booking.format;
+  const btn = document.getElementById('btnConfirmBooking');
+  const recap = document.getElementById('bookingRecap');
+  btn.disabled = !all;
+  if (all) {
+    recap.classList.add('show');
+    btn.textContent = 'Confirmer ma séance ✓';
+  } else {
+    recap.classList.remove('show');
+    btn.textContent = 'Confirmer la réservation';
+  }
+}
+
+// 5) Confirmation de la réservation
+document.getElementById('btnConfirmBooking').addEventListener('click', () => {
+  document.getElementById('finalModule').textContent = booking.module;
+  document.getElementById('finalDate').textContent   = booking.date;
+  document.getElementById('finalSlot').textContent   = booking.slot;
+  document.getElementById('finalFormat').textContent = booking.format;
+
+  document.getElementById('bookingFlow').style.display = 'none';
+  document.getElementById('confirmationState').classList.add('show');
+
+  // Mise à jour du parcours (étape 2 → done, étape 3 → current)
+  const cards = document.querySelectorAll('.journey-card');
+  if (cards[1]) {
+    cards[1].classList.remove('current');
+    cards[1].classList.add('done');
+  }
+  if (cards[2]) cards[2].classList.add('current');
+});
+
+// 6) Réinitialisation pour une nouvelle séance
+document.getElementById('btnNewBooking').addEventListener('click', () => {
+  Object.keys(booking).forEach(k => booking[k] = null);
+  document.querySelectorAll('.module-opt, .date-opt, .slot-opt, .format-opt')
+    .forEach(o => o.classList.remove('selected'));
+  ['recapModule', 'recapDate', 'recapSlot', 'recapFormat']
+    .forEach(id => document.getElementById(id).textContent = '—');
+
+  document.getElementById('bookingRecap').classList.remove('show');
+  document.getElementById('btnConfirmBooking').disabled = true;
+  document.getElementById('btnConfirmBooking').textContent = 'Confirmer la réservation';
+
+  document.getElementById('confirmationState').classList.remove('show');
+  document.getElementById('bookingFlow').style.display = 'block';
+
+  document.getElementById('booking').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// 7) Add-ons (toggle ajouté/retiré)
+document.querySelectorAll('.btn-addon').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('added')) {
+      btn.classList.remove('added');
+      btn.textContent = '+ Ajouter';
+    } else {
+      btn.classList.add('added');
+      btn.textContent = '✓ Ajouté';
+    }
+  });
+});
+</script>
 
 </body>
 </html>
