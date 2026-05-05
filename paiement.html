@@ -2,32 +2,484 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Paiement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paiement sécurisé — PlanControl Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== Carte de crédit visuelle (3D flip) ===== */
+    .card-preview-wrap {
+      perspective: 1200px;
+      max-width: 420px;
+      margin: 0 auto 28px;
+    }
+    .card-preview {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1.586 / 1;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+    }
+    .card-preview.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08) inset;
+      overflow: hidden;
+    }
+    .card-front {
+      background: linear-gradient(135deg, #1a2235 0%, #2563EB 50%, #7C3AED 120%);
+      color: #fff;
+    }
+    .card-front::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 35%),
+        radial-gradient(circle at 20% 80%, rgba(245,158,11,0.15) 0%, transparent 35%);
+      pointer-events: none;
+    }
+    .card-back {
+      background: linear-gradient(135deg, #0B0F1A 0%, #1E2A3A 100%);
+      transform: rotateY(180deg);
+      color: #fff;
+      padding: 0;
+    }
+    .card-back::before {
+      content: '';
+      display: block;
+      height: 48px;
+      background: #000;
+      margin-top: 24px;
+    }
+    .card-back-content {
+      padding: 20px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cvv-strip {
+      background: rgba(255,255,255,0.85);
+      color: #111;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-align: right;
+    }
+    .card-back-label {
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      text-align: right;
+    }
+    .card-back-note {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+    .card-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+    .card-brand {
+      font-family: 'DM Serif Display', serif;
+      font-size: 0.95rem;
+      letter-spacing: -0.3px;
+    }
+    .card-brand span { color: #93C5FD; }
+    .card-type {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      opacity: 0.9;
+      transition: opacity 0.3s;
+    }
+    .card-chip {
+      width: 42px;
+      height: 32px;
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      border-radius: 6px;
+      position: relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .card-chip::after {
+      content: '';
+      position: absolute;
+      inset: 6px 4px;
+      border: 1px solid rgba(0,0,0,0.25);
+      border-radius: 3px;
+      background:
+        linear-gradient(0deg, transparent 33%, rgba(0,0,0,0.2) 33%, rgba(0,0,0,0.2) 36%, transparent 36%, transparent 66%, rgba(0,0,0,0.2) 66%, rgba(0,0,0,0.2) 69%, transparent 69%);
+    }
+    .card-number {
+      font-family: 'DM Sans', monospace;
+      font-size: 1.35rem;
+      letter-spacing: 2.5px;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .card-number .placeholder { opacity: 0.5; }
+    .card-bottom { display: flex; justify-content: space-between; gap: 16px; position: relative; z-index: 1; }
+    .card-info-block .label {
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 4px;
+    }
+    .card-info-block .value {
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      min-height: 1.1em;
+    }
+    .card-info-block .value .placeholder { opacity: 0.45; }
+
+    /* ===== Récap commande amélioré ===== */
+    .payment-summary {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .ps-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+    }
+    .ps-row + .ps-row { border-top: 1px solid var(--border); }
+    .ps-row.total {
+      background: rgba(245,158,11,0.06);
+      border-top: 1px solid rgba(245,158,11,0.2);
+    }
+    .ps-row.total .ps-label { color: var(--text); font-weight: 600; font-size: 0.95rem; }
+    .ps-line { font-size: 0.88rem; color: var(--text); }
+    .ps-line small { color: var(--text-dim); display: block; font-size: 0.78rem; margin-top: 2px; }
+    .ps-amount { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; }
+
+    /* ===== Bouton de remplissage test ===== */
+    .test-fill-btn {
+      background: rgba(59,130,246,0.08);
+      border: 1px dashed rgba(59,130,246,0.3);
+      color: var(--accent-blue);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 18px;
+      transition: all 0.2s;
+    }
+    .test-fill-btn:hover {
+      background: rgba(59,130,246,0.14);
+      border-style: solid;
+    }
+
+    /* ===== Étapes de paiement (status amélioré) ===== */
+    .payment-process {
+      display: none;
+      margin-top: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .payment-process.show { display: block; animation: slideDown 0.4s ease; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .step-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+    .step-line.active { opacity: 1; }
+    .step-line.done { opacity: 0.7; }
+    .step-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      transition: all 0.3s;
+    }
+    .step-line.active .step-icon {
+      border-color: var(--accent-blue);
+      background: rgba(59,130,246,0.2);
+    }
+    .step-line.active .step-icon::after {
+      content: '';
+      width: 8px; height: 8px;
+      border: 2px solid var(--accent-blue);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .step-line.done .step-icon {
+      border-color: var(--accent-green);
+      background: rgba(16,185,129,0.2);
+      color: var(--accent-green);
+    }
+    .step-line.done .step-icon::after { content: '✓'; font-weight: 700; }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .step-text { font-size: 0.9rem; color: var(--text); }
+
+    /* Confirmation succès */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      animation: zoomIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+    }
+    .success-screen.show { display: block; }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .success-check {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: rgba(16,185,129,0.15);
+      border: 2px solid var(--accent-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--accent-green);
+    }
+    .success-screen h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    .success-screen p { color: var(--text-muted); margin-bottom: 4px; }
+
+    /* Disclaimer pédagogique */
+    .demo-disclaimer {
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+    .demo-disclaimer span { font-size: 1.1rem; }
+
+    /* Min nav simplifié pour checkout */
+    .checkout-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(11,15,26,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .checkout-nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .checkout-secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .checkout-secure-badge::before {
+      content: '🔒';
+      font-size: 0.95rem;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Paiement du cours premium</h1>
+  <!-- Navbar simplifiée pour le tunnel de paiement -->
+  <nav class="checkout-nav">
+    <div class="checkout-nav-inner">
+      <a href="index.html" class="logo">Plan<span>Control</span> Academy</a>
+      <div class="checkout-secure-badge">Paiement sécurisé SSL</div>
+    </div>
+  </nav>
 
-<form id="paymentForm">
-  <label>Numéro de carte :</label>
-  <input type="text" id="cardNumber"><br>
+  <div class="hero-bg"></div>
 
-  <label>Nom :</label>
-  <input type="text" id="name"><br>
+  <main class="payment-page">
+    <div class="payment-container">
 
-  <label>Date d'expiration :</label>
-  <input type="text" id="expiry"><br>
+      <a href="index.html" class="back-link">← Retour à la formation</a>
 
-  <label>CVV :</label>
-  <input type="text" id="cvv"><br><br>
+      <h1>Finaliser votre commande</h1>
+      <p class="subtitle">Quelques secondes et vous accédez au Premium.</p>
 
-  <button type="button" onclick="fakePayment()">Payer</button>
-</form>
+      <div class="demo-disclaimer">
+        <span>ℹ️</span>
+        <div>Ceci est une simulation de paiement à but pédagogique. Aucune transaction réelle n'est effectuée et aucune donnée bancaire n'est transmise.</div>
+      </div>
 
-<p id="status"></p>
+      <!-- Carte de crédit visuelle interactive -->
+      <div class="card-preview-wrap">
+        <div class="card-preview" id="cardPreview">
+          <div class="card-face card-front">
+            <div class="card-row">
+              <div class="card-brand">Plan<span>Control</span></div>
+              <div class="card-type" id="cardType">CARTE</div>
+            </div>
+            <div class="card-row">
+              <div class="card-chip"></div>
+            </div>
+            <div class="card-number" id="cardNumberDisplay">
+              <span class="placeholder">•••• •••• •••• ••••</span>
+            </div>
+            <div class="card-bottom">
+              <div class="card-info-block">
+                <div class="label">Titulaire</div>
+                <div class="value" id="cardNameDisplay"><span class="placeholder">VOTRE NOM</span></div>
+              </div>
+              <div class="card-info-block">
+                <div class="label">Expire</div>
+                <div class="value" id="cardExpiryDisplay"><span class="placeholder">MM/AA</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-back-content">
+              <div class="card-back-label">CVV</div>
+              <div class="cvv-strip" id="cardCvvDisplay">•••</div>
+              <div class="card-back-note">Le CVV est le code à 3 chiffres au dos de votre carte.</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<script src="script.js"></script>
+      <div class="payment-card">
+        <!-- Récap commande -->
+        <div class="payment-summary">
+          <div class="ps-row">
+            <div class="ps-line">
+              Formule Premium
+              <small>Accès illimité aux 3 modules</small>
+            </div>
+            <div class="ps-amount">49,00 €</div>
+          </div>
+          <div class="ps-row">
+            <div class="ps-line">
+              Séance de coaching offerte
+              <small>1h avec un professeur</small>
+            </div>
+            <div class="ps-amount" style="color: var(--accent-green);">Inclus</div>
+          </div>
+          <div class="ps-row total">
+            <div class="ps-label">Total à régler</div>
+            <div class="ps-price">49,00 €</div>
+          </div>
+        </div>
 
+        <!-- Bouton de remplissage test -->
+        <button type="button" class="test-fill-btn" id="testFillBtn">
+          ⚡ Remplir avec une carte de test
+        </button>
+
+        <!-- Formulaire -->
+        <form id="paymentForm" autocomplete="off">
+          <div class="form-group">
+            <label for="cardNumber">Numéro de carte</label>
+            <input type="text" id="cardNumber" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456">
+          </div>
+
+          <div class="form-group">
+            <label for="name">Titulaire de la carte</label>
+            <input type="text" id="name" placeholder="Jean Dupont">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiry">Expiration</label>
+              <input type="text" id="expiry" inputmode="numeric" maxlength="5" placeholder="MM/AA">
+            </div>
+            <div class="form-group">
+              <label for="cvv">CVV</label>
+              <input type="text" id="cvv" inputmode="numeric" maxlength="3" placeholder="123">
+            </div>
+          </div>
+
+          <button type="button" class="btn-pay" id="payBtn" onclick="fakePayment()">
+            Payer 49,00 €
+          </button>
+
+          <p class="secure-info">🔒 Connexion chiffrée • Données non transmises</p>
+        </form>
+
+        <!-- Process en plusieurs étapes -->
+        <div class="payment-process" id="paymentProcess">
+          <div class="step-line" id="step1">
+            <div class="step-icon"></div>
+            <div class="step-text">Vérification de la carte...</div>
+          </div>
+          <div class="step-line" id="step2">
+            <div class="step-icon"></div>
+            <div class="step-text">Connexion sécurisée à la banque...</div>
+          </div>
+          <div class="step-line" id="step3">
+            <div class="step-icon"></div>
+            <div class="step-text">Validation du paiement...</div>
+          </div>
+          <div class="step-line" id="step4">
+            <div class="step-icon"></div>
+            <div class="step-text">Activation de votre accès Premium...</div>
+          </div>
+        </div>
+
+        <!-- Écran de succès -->
+        <div class="success-screen" id="successScreen">
+          <div class="success-check">✓</div>
+          <h2>Paiement accepté</h2>
+          <p>Votre accès Premium est activé.</p>
+          <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 12px;">Redirection en cours...</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
