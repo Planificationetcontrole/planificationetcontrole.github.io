@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Méthode MPM — PlanControl Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .quiz-option { cursor:pointer; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin-bottom:10px; transition:all 0.2s; font-size:0.92rem; }
+    .quiz-option:hover { border-color:rgba(124,58,237,0.4); background:rgba(124,58,237,0.06); }
+    .quiz-option.correct { border-color:#10B981; background:rgba(16,185,129,0.1); color:#10B981; }
+    .quiz-option.wrong { border-color:#EF4444; background:rgba(239,68,68,0.1); color:#EF4444; }
+    .quiz-option.disabled { pointer-events:none; opacity:0.6; }
+    .flashcard { perspective:600px; cursor:pointer; }
+    .flashcard-inner { position:relative; width:100%; min-height:140px; transition:transform 0.5s; transform-style:preserve-3d; }
+    .flashcard.flipped .flashcard-inner { transform:rotateY(180deg); }
+    .flashcard-front, .flashcard-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; padding:24px; display:flex; align-items:center; justify-content:center; text-align:center; }
+    .flashcard-front { background:var(--surface); border:1px solid var(--border); }
+    .flashcard-back { background:rgba(124,58,237,0.1); border:1px solid rgba(124,58,237,0.3); transform:rotateY(180deg); }
+    .flashcard-back p { color:var(--text); font-size:0.92rem; line-height:1.6; }
+    .flashcard-front p { color:var(--text-muted); font-weight:600; }
+    .fc-hint { font-size:0.75rem; color:var(--text-dim); margin-top:8px; }
+    .progress-bar-container { background:rgba(255,255,255,0.06); border-radius:100px; height:6px; margin-bottom:32px; overflow:hidden; }
+    .progress-bar-fill { height:100%; background:linear-gradient(90deg,#7C3AED,#A78BFA); border-radius:100px; transition:width 0.5s ease; }
+    /* MPM NODE DIAGRAM */
+    .mpm-canvas-wrapper { position:relative; overflow:hidden; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+    canvas#mpmCanvas { display:block; cursor:pointer; }
+    .node-info { background:rgba(124,58,237,0.1); border:1px solid rgba(124,58,237,0.25); border-radius:10px; padding:14px; font-size:0.85rem; color:var(--text-muted); margin-top:12px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Plan<span>Control</span> Academy</a>
+      <ul class="nav-links">
+        <li><a href="index.html#cours">← Tous les cours</a></li>
+        <li><a href="cours-budget.html">Budget</a></li>
+        <li><a href="cours-gantt.html">Gantt</a></li>
+        <li><a href="paiement.html">Premium</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="course-hero" style="background:radial-gradient(ellipse 80% 60% at 60% 50%, rgba(124,58,237,0.12) 0%, transparent 70%);">
+    <div class="course-hero-inner">
+      <div class="course-breadcrumb">
+        <a href="index.html">Accueil</a>
+        <span>›</span>
+        <span>Méthode MPM</span>
+      </div>
+      <div class="course-header-badges">
+        <span class="hero-badge" style="background:rgba(124,58,237,0.15);border-color:rgba(124,58,237,0.3);color:#A78BFA">Module 03 · Réseau</span>
+        <span class="hero-badge" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:#34D399">Accès libre</span>
+      </div>
+      <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,5vw,3.8rem);letter-spacing:-2px;line-height:1.1;margin:16px 0 20px">Méthode<br><em style="color:#A78BFA">MPM</em></h1>
+      <p style="color:var(--text-muted);font-size:1.05rem;line-height:1.7;max-width:560px;margin-bottom:32px">Maîtrisez la méthode des potentiels Métra (MPM) pour modéliser les dépendances entre tâches et identifier le chemin critique d'un projet.</p>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">📄 <span>Fiche de synthèse</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">✏️ <span>2 exercices pratiques</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🎬 <span>Vidéo explicative</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🃏 <span>Flashcards</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🔗 <span>Visualiseur de réseau</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div style="max-width:900px;margin:0 auto;padding:0 32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:0.82rem;color:var(--text-muted)">Progression du cours</span>
+      <span id="progressPct" style="font-size:0.82rem;color:#A78BFA;font-weight:600">0%</span>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="course-page">
+    <div class="course-tabs-wrapper">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('fiche',this)">📄 Fiche de synthèse</button>
+        <button class="tab-btn" onclick="switchTab('flashcards',this)">🃏 Flashcards</button>
+        <button class="tab-btn" onclick="switchTab('visualiseur',this)">🔗 Visualiseur MPM</button>
+        <button class="tab-btn" onclick="switchTab('exercices',this)">✏️ Exercices</button>
+        <button class="tab-btn" onclick="switchTab('video',this)">🎬 Vidéo</button>
+        <button class="tab-btn" onclick="switchTab('quiz',this)">🎯 Quiz rapide</button>
+      </div>
+    </div>
+
+    <div class="course-content">
+
+      <!-- FICHE -->
+      <div class="tab-content active" id="tab-fiche">
+        <div class="fiche-header">
+          <h2>📄 Fiche de synthèse</h2>
+          <p>La méthode MPM (Méthode des Potentiels Métra) expliquée en détail</p>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(124,58,237,0.2);color:#A78BFA">1</span>Présentation de la méthode MPM</h3>
+          <p>La <strong>MPM</strong> (ou méthode des potentiels) a été développée par Bernard Roy en 1958. Contrairement à la méthode PERT (qui représente les tâches par des arcs), en MPM :</p>
+          <ul class="fiche-list">
+            <li>Les <strong>tâches sont représentées par des nœuds</strong> (sommets du graphe)</li>
+            <li>Les <strong>contraintes de succession</strong> sont représentées par des arcs avec une valeur (délai)</li>
+            <li>Elle permet de gérer des contraintes de type <strong>FD, DD, FF</strong></li>
+            <li>Elle s'appuie sur le calcul des <strong>rangs</strong>, <strong>dates au plus tôt</strong> et <strong>dates au plus tard</strong></li>
+          </ul>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(124,58,237,0.2);color:#A78BFA">2</span>Structure du nœud MPM</h3>
+          <div style="display:flex;justify-content:center;margin:20px 0">
+            <div style="border:2px solid rgba(124,58,237,0.5);border-radius:12px;overflow:hidden;width:220px">
+              <div style="background:rgba(124,58,237,0.2);padding:8px;text-align:center;font-weight:700;font-size:0.9rem;border-bottom:1px solid rgba(124,58,237,0.3)">NOM DE LA TÂCHE</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(124,58,237,0.3)">
+                <div style="padding:8px;text-align:center;border-right:1px solid rgba(124,58,237,0.3)">
+                  <div style="font-size:0.68rem;color:var(--text-dim)">Date + tôt</div>
+                  <div style="font-weight:700;color:#A78BFA">tôt</div>
+                </div>
+                <div style="padding:8px;text-align:center">
+                  <div style="font-size:0.68rem;color:var(--text-dim)">Date + tard</div>
+                  <div style="font-weight:700;color:#F87171">tard</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr">
+                <div style="padding:8px;text-align:center;border-right:1px solid rgba(124,58,237,0.3)">
+                  <div style="font-size:0.68rem;color:var(--text-dim)">Durée</div>
+                  <div style="font-weight:700">d</div>
+                </div>
+                <div style="padding:8px;text-align:center">
+                  <div style="font-size:0.68rem;color:var(--text-dim)">Marge totale</div>
+                  <div style="font-weight:700;color:#34D399">MT</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style="text-align:center;font-size:0.85rem;color:var(--text-muted)">Structure standard d'un nœud dans le graphe MPM</p>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(124,58,237,0.2);color:#A78BFA">3</span>Calcul des dates au plus tôt (phase aller)</h3>
+          <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:18px;margin-top:12px">
+            <strong style="color:#A78BFA">Règle de calcul (parcours AVANT) :</strong>
+            <p style="margin-top:10px;font-size:0.9rem">On part du <strong>nœud début</strong> (date = 0) et on progresse vers la droite :</p>
+            <p style="margin-top:8px;font-size:0.92rem;text-align:center;font-family:'DM Serif Display',serif"><strong>Date au plus tôt (j) = MAX [ Date au plus tôt (i) + délai (i→j) ]</strong></p>
+            <p style="margin-top:8px;font-size:0.85rem;color:var(--text-muted)">On prend le <strong>maximum</strong> car la tâche ne peut démarrer qu'après toutes ses prédécesseurs.</p>
+          </div>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(124,58,237,0.2);color:#A78BFA">4</span>Calcul des dates au plus tard (phase retour)</h3>
+          <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:18px;margin-top:12px">
+            <strong style="color:#F87171">Règle de calcul (parcours ARRIÈRE) :</strong>
+            <p style="margin-top:10px;font-size:0.9rem">On part du <strong>nœud fin</strong> (date + tard = date + tôt) et on remonte vers la gauche :</p>
+            <p style="margin-top:8px;font-size:0.92rem;text-align:center;font-family:'DM Serif Display',serif"><strong>Date au plus tard (i) = MIN [ Date au plus tard (j) − délai (i→j) ]</strong></p>
+            <p style="margin-top:8px;font-size:0.85rem;color:var(--text-muted)">On prend le <strong>minimum</strong> pour ne pas décaler les successeurs.</p>
+          </div>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(124,58,237,0.2);color:#A78BFA">5</span>Marges et chemin critique</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+              <strong style="color:#A78BFA">Marge totale</strong>
+              <p style="margin-top:8px;font-size:0.85rem;font-family:'DM Serif Display',serif">MT = Tard(i) − Tôt(i)</p>
+              <p style="margin-top:4px;font-size:0.78rem;color:var(--text-dim)">Retard max sans retarder le projet</p>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+              <strong style="color:#A78BFA">Marge libre</strong>
+              <p style="margin-top:8px;font-size:0.85rem;font-family:'DM Serif Display',serif">ML = Min[Tôt(j)] − Tôt(i) − d(i)</p>
+              <p style="margin-top:4px;font-size:0.78rem;color:var(--text-dim)">Retard max sans affecter les successeurs</p>
+            </div>
+          </div>
+          <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px;margin-top:14px">
+            <strong style="color:#F87171;font-size:0.88rem">🔴 Chemin critique = ensemble des tâches avec MT = 0</strong>
+            <p style="margin-top:6px;font-size:0.85rem;color:var(--text-muted)">Ce chemin relie le nœud début au nœud fin et correspond à la durée totale minimale du projet.</p>
+          </div>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(124,58,237,0.2);color:#A78BFA">6</span>MPM vs PERT : les différences</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:0.85rem;margin-top:14px">
+            <thead><tr style="background:rgba(255,255,255,0.06)">
+              <th style="padding:10px 14px;text-align:left;border:1px solid var(--border)">Critère</th>
+              <th style="padding:10px 14px;text-align:center;border:1px solid var(--border)">MPM</th>
+              <th style="padding:10px 14px;text-align:center;border:1px solid var(--border)">PERT</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:10px 14px;border:1px solid var(--border)">Représentation des tâches</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:#A78BFA">Nœuds (sommets)</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:var(--text-muted)">Arcs (flèches)</td></tr>
+              <tr><td style="padding:10px 14px;border:1px solid var(--border)">Tâches fictives</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:#34D399">Non nécessaires</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:#F87171">Parfois nécessaires</td></tr>
+              <tr><td style="padding:10px 14px;border:1px solid var(--border)">Types de contraintes</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:#A78BFA">FD, DD, FF, DF</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:var(--text-muted)">FD uniquement</td></tr>
+              <tr><td style="padding:10px 14px;border:1px solid var(--border)">Origine</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:var(--text-muted)">Bernard Roy, 1958</td><td style="padding:10px 14px;text-align:center;border:1px solid var(--border);color:var(--text-muted)">US Navy, 1957</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:18px;margin-top:24px">
+          <strong style="color:var(--accent-gold);font-size:0.85rem">💡 À RETENIR</strong>
+          <p style="margin-top:8px;font-size:0.9rem;color:var(--text-muted)">En MPM, les tâches sont les nœuds. Le chemin critique est la chaîne de tâches dont les marges totales sont nulles. La phase aller donne les dates au plus tôt (MAX), la phase retour donne les dates au plus tard (MIN).</p>
+        </div>
+      </div>
+
+      <!-- FLASHCARDS -->
+      <div class="tab-content" id="tab-flashcards">
+        <div class="fiche-header">
+          <h2>🃏 Flashcards interactives</h2>
+          <p>Cliquez sur une carte pour révéler la définition</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px" id="flashcardsGrid"></div>
+        <div style="text-align:center;margin-top:28px">
+          <button onclick="shuffleFlashcards()" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);color:#A78BFA;padding:10px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer">🔀 Mélanger les cartes</button>
+        </div>
+      </div>
+
+      <!-- VISUALISEUR MPM -->
+      <div class="tab-content" id="tab-visualiseur">
+        <div class="fiche-header">
+          <h2>🔗 Visualiseur de réseau MPM</h2>
+          <p>Un exemple de graphe MPM interactif — survolez les nœuds pour voir les détails</p>
+        </div>
+        <div style="margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button onclick="loadExampleSmall()" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);color:#A78BFA;padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer">Exemple simple (4 tâches)</button>
+          <button onclick="loadExampleFull()" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);color:#A78BFA;padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer">Exemple complet (6 tâches)</button>
+        </div>
+        <div class="mpm-canvas-wrapper">
+          <canvas id="mpmCanvas" width="860" height="400"></canvas>
+        </div>
+        <div class="node-info" id="nodeInfo">👆 Survolez un nœud pour afficher ses détails. Le chemin critique est mis en évidence en <strong style="color:#A78BFA">violet</strong>.</div>
+        <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text-muted)"><div style="width:20px;height:20px;background:rgba(124,58,237,0.3);border:2px solid #7C3AED;border-radius:50%"></div>Tâche critique (MT=0)</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text-muted)"><div style="width:20px;height:20px;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.2);border-radius:50%"></div>Tâche non critique</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text-muted)"><div style="width:30px;height:3px;background:#7C3AED;border-radius:2px"></div>Arc critique</div>
+        </div>
+      </div>
+
+      <!-- EXERCICES -->
+      <div class="tab-content" id="tab-exercices">
+        <div class="fiche-header">
+          <h2>✏️ Exercices d'entraînement</h2>
+          <p>Calculez les dates et identifiez les chemins critiques</p>
+        </div>
+
+        <div class="exercice-block">
+          <div class="exercice-header">
+            <span class="ex-badge" style="background:rgba(124,58,237,0.15);border-color:rgba(124,58,237,0.3);color:#A78BFA">Exercice 1</span>
+            <span class="ex-level" style="background:rgba(16,185,129,0.1);color:#34D399;border-color:rgba(16,185,129,0.25)">Niveau : Fondamental</span>
+          </div>
+          <h3>Calcul MPM — Projet de construction</h3>
+          <div class="enonce">
+            <p><strong>Contexte :</strong> Un projet de construction comprend les tâches suivantes :</p>
+            <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:0.88rem">
+              <thead><tr style="background:rgba(255,255,255,0.06)">
+                <th style="padding:8px 12px;text-align:left;border:1px solid var(--border)">Tâche</th>
+                <th style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Durée (j)</th>
+                <th style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Contrainte</th>
+              </tr></thead>
+              <tbody>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">Début</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">0</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">—</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">A — Terrassement</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">5</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Début FD 0</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">B — Fondations</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">8</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">A FD 0</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">C — Livraison matériaux</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">3</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Début FD 0</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">D — Gros œuvre</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">10</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">B FD 0, C FD 0</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">Fin</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">0</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">D FD 0</td></tr>
+              </tbody>
+            </table>
+            <strong>Questions :</strong>
+            <ol style="margin:8px 0 0 20px;line-height:2">
+              <li>Dessinez le graphe MPM avec les nœuds</li>
+              <li>Calculez les dates au plus tôt (phase aller)</li>
+              <li>Calculez les dates au plus tard (phase retour)</li>
+              <li>Identifiez le chemin critique et les marges</li>
+            </ol>
+          </div>
+          <button class="btn-corrige" onclick="toggleCorrige('corrige1',this)">Voir le corrigé →</button>
+          <div class="corrige" id="corrige1">
+            <strong style="color:#A78BFA">Phase aller (dates au plus tôt) :</strong>
+            <ul style="margin-top:8px;margin-left:20px;line-height:2;font-size:0.88rem">
+              <li>Début : tôt = 0</li>
+              <li>A : tôt = 0 + 0 = 0 → finit à j.5</li>
+              <li>C : tôt = 0 → finit à j.3</li>
+              <li>B : tôt = max(tôt_A + dur_A) = 0 + 5 = 5 → finit à j.13</li>
+              <li>D : tôt = max(B+0, C+0) = max(13, 3) = <strong>13</strong> → finit à j.23</li>
+              <li>Fin : tôt = 23 + 0 = <strong>23 jours</strong></li>
+            </ul>
+            <strong style="color:#A78BFA;display:block;margin-top:12px">Phase retour (dates au plus tard) :</strong>
+            <ul style="margin-top:8px;margin-left:20px;line-height:2;font-size:0.88rem">
+              <li>Fin : tard = 23</li>
+              <li>D : tard = 23 − 10 = 13</li>
+              <li>B : tard = 13 − 8 = 5</li>
+              <li>C : tard = 13 − 3 = 10</li>
+              <li>A : tard = 5 − 5 = 0</li>
+              <li>Début : tard = min(A→0, C→0) = 0</li>
+            </ul>
+            <strong style="color:#A78BFA;display:block;margin-top:12px">Marges totales :</strong>
+            <ul style="margin-top:8px;margin-left:20px;line-height:2;font-size:0.88rem">
+              <li>A : MT = 0 − 0 = <strong style="color:#F87171">0 (critique)</strong></li>
+              <li>B : MT = 5 − 5 = <strong style="color:#F87171">0 (critique)</strong></li>
+              <li>C : MT = 10 − 0 = <strong style="color:#34D399">10 jours</strong></li>
+              <li>D : MT = 13 − 13 = <strong style="color:#F87171">0 (critique)</strong></li>
+            </ul>
+            <strong style="color:#F87171;display:block;margin-top:10px">Chemin critique : Début → A → B → D → Fin (23 jours)</strong>
+          </div>
+        </div>
+
+        <div class="exercice-block">
+          <div class="exercice-header">
+            <span class="ex-badge" style="background:rgba(124,58,237,0.15);border-color:rgba(124,58,237,0.3);color:#A78BFA">Exercice 2</span>
+            <span class="ex-level" style="background:rgba(245,158,11,0.1);color:#FCD34D;border-color:rgba(245,158,11,0.25)">Niveau : Intermédiaire</span>
+          </div>
+          <h3>MPM avec contraintes variées — Projet informatique</h3>
+          <div class="enonce">
+            <p><strong>Contexte :</strong> Un projet de développement logiciel présente des contraintes non standards :</p>
+            <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:0.88rem">
+              <thead><tr style="background:rgba(255,255,255,0.06)"><th style="padding:8px 12px;text-align:left;border:1px solid var(--border)">Arc</th><th style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Type</th><th style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Valeur (j)</th><th style="padding:8px 12px;border:1px solid var(--border)">Signification</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">Début → A</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">FD</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">0</td><td style="padding:8px 12px;border:1px solid var(--border)">A démarre dès le début</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">A → B</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">DD</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">2</td><td style="padding:8px 12px;border:1px solid var(--border)">B démarre 2j après le début de A</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">A → C</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">FD</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">0</td><td style="padding:8px 12px;border:1px solid var(--border)">C démarre à la fin de A</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">B → C</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">FF</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">3</td><td style="padding:8px 12px;border:1px solid var(--border)">C finit 3j après la fin de B</td></tr>
+              </tbody>
+            </table>
+            <p>Durées : Début=0j, A=6j, B=4j, C=5j, Fin=0j</p>
+            <strong>Question : Calculez les dates au plus tôt pour chaque tâche.</strong>
+          </div>
+          <button class="btn-corrige" onclick="toggleCorrige('corrige2',this)">Voir le corrigé →</button>
+          <div class="corrige" id="corrige2">
+            <strong style="color:#A78BFA">Rappel des formules selon le type de contrainte :</strong>
+            <ul style="margin:8px 0 0 20px;line-height:2;font-size:0.88rem">
+              <li><strong>FD (Fin→Début)</strong> : tôt(j) ≥ tôt(i) + durée(i) + délai</li>
+              <li><strong>DD (Début→Début)</strong> : tôt(j) ≥ tôt(i) + délai</li>
+              <li><strong>FF (Fin→Fin)</strong> : tôt(j) + durée(j) ≥ tôt(i) + durée(i) + délai → tôt(j) ≥ tôt(i) + durée(i) + délai − durée(j)</li>
+            </ul>
+            <strong style="color:#A78BFA;display:block;margin-top:12px">Calcul :</strong>
+            <ul style="margin-top:8px;margin-left:20px;line-height:2;font-size:0.88rem">
+              <li>Début : tôt = 0</li>
+              <li>A : tôt = 0 + 0 = <strong>0</strong></li>
+              <li>B (DD+2 de A) : tôt ≥ tôt(A) + 2 = 0 + 2 = <strong>2</strong></li>
+              <li>C (FD de A) : tôt ≥ 0 + 6 = 6</li>
+              <li>C (FF+3 de B) : tôt ≥ tôt(B) + dur(B) + 3 − dur(C) = 2 + 4 + 3 − 5 = 4</li>
+              <li>C : tôt = max(6, 4) = <strong>6</strong></li>
+              <li>Fin : tôt = 6 + 5 = <strong>11 jours</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDÉO -->
+      <div class="tab-content" id="tab-video">
+        <div class="fiche-header">
+          <h2>🎬 Vidéo explicative</h2>
+          <p>La méthode MPM illustrée étape par étape</p>
+        </div>
+        <div class="video-section">
+          <div class="video-placeholder" id="videoPlaceholder">
+            <div class="video-play" onclick="showVideo()" style="background:#7C3AED">▶</div>
+            <h3>La méthode MPM de A à Z</h3>
+            <p>Durée estimée : 12–15 min · Calculs détaillés et exemples</p>
+          </div>
+          <div class="video-embed" id="videoEmbed">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Méthode MPM" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-top:28px">
+          <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:16px">📝 Points clés abordés dans la vidéo</h3>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#A78BFA;font-size:0.85rem;font-weight:600">00:00</span><span style="font-size:0.88rem">Présentation et historique de la MPM</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#A78BFA;font-size:0.85rem;font-weight:600">03:30</span><span style="font-size:0.88rem">Construction du graphe et structure des nœuds</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#A78BFA;font-size:0.85rem;font-weight:600">07:00</span><span style="font-size:0.88rem">Phase aller, phase retour — exemple complet</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#A78BFA;font-size:0.85rem;font-weight:600">11:00</span><span style="font-size:0.88rem">Identification du chemin critique et des marges</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUIZ -->
+      <div class="tab-content" id="tab-quiz">
+        <div class="fiche-header">
+          <h2>🎯 Quiz rapide</h2>
+          <p>5 questions sur la méthode MPM</p>
+        </div>
+        <div id="quizContainer"></div>
+        <div id="quizResult" style="display:none;text-align:center;padding:32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-top:20px">
+          <div style="font-size:3rem;margin-bottom:12px" id="quizEmoji"></div>
+          <div style="font-family:'DM Serif Display',serif;font-size:2rem;margin-bottom:8px" id="quizScore"></div>
+          <p id="quizMsg" style="color:var(--text-muted);margin-bottom:20px"></p>
+          <button onclick="resetQuiz()" style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;padding:10px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.9rem">Recommencer le quiz</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="max-width:900px;margin:0 auto;padding:0 32px 80px">
+    <div class="premium-banner">
+      <div>
+        <h3>👨‍🏫 Allez plus loin avec le Premium</h3>
+        <p>Séances en physique avec un professeur expert — cas MPM réels — correction personnalisée</p>
+      </div>
+      <a href="paiement.html" class="btn btn-premium">Accéder au Premium — 49€</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">Plan<span>Control</span> Academy</div>
+      <p>Plateforme de formation — Projet académique M1</p>
+      <div class="footer-links">
+        <a href="cours-budget.html">Budget</a>
+        <a href="cours-gantt.html">Gantt</a>
+        <a href="cours-mpm.html">MPM</a>
+        <a href="paiement.html">Premium</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  const tabProgress={fiche:20,flashcards:40,visualiseur:60,exercices:80,video:90,quiz:100};
+  let visited=new Set(['fiche']);
+  function switchTab(id,btn){
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    btn.classList.add('active');
+    visited.add(id);
+    updateProgress();
+    if(id==='flashcards') renderFlashcards();
+    if(id==='quiz') initQuiz();
+    if(id==='visualiseur') { loadExampleFull(); }
+  }
+  function updateProgress(){
+    const m=Math.max(...[...visited].map(t=>tabProgress[t]||0));
+    document.getElementById('progressBar').style.width=m+'%';
+    document.getElementById('progressPct').textContent=m+'%';
+  }
+  function showVideo(){document.getElementById('videoPlaceholder').style.display='none';document.getElementById('videoEmbed').classList.add('show');}
+  function toggleCorrige(id,btn){const el=document.getElementById(id);el.classList.toggle('show');btn.textContent=el.classList.contains('show')?'Masquer le corrigé ↑':'Voir le corrigé →';}
+
+  // FLASHCARDS
+  const flashcardsData=[
+    {q:'MPM',a:'Méthode des Potentiels Métra. Les tâches sont des nœuds, les contraintes sont des arcs. Développée par Bernard Roy en 1958.'},
+    {q:'Phase aller',a:'Calcul des dates au plus tôt en partant du nœud début. Règle : MAX des (date tôt(i) + délai(i→j)) pour tous les prédécesseurs.'},
+    {q:'Phase retour',a:'Calcul des dates au plus tard en partant du nœud fin. Règle : MIN des (date tard(j) − délai(i→j)) pour tous les successeurs.'},
+    {q:'Marge totale (MT)',a:'MT = date tard − date tôt. Retard maximum autorisé sans retarder la fin du projet. MT = 0 sur le chemin critique.'},
+    {q:'Contrainte DD',a:'Début-Début. La tâche j peut démarrer seulement une fois que i a commencé depuis le délai indiqué.'},
+    {q:'Contrainte FF',a:'Fin-Fin. La tâche j se termine seulement une fois que i se termine depuis le délai indiqué.'},
+    {q:'Tâche fictive',a:'Non nécessaire en MPM (contrairement au PERT). La MPM gère nativement tous les types de contraintes.'},
+    {q:'Rang d\'un nœud',a:'Position du nœud dans le graphe. Un nœud de rang k a tous ses prédécesseurs de rang < k. Permet d\'ordonner les calculs.'},
+  ];
+  let shuffled=[...flashcardsData];
+  function renderFlashcards(){document.getElementById('flashcardsGrid').innerHTML=shuffled.map(fc=>`<div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div><p>${fc.q}</p><p class="fc-hint">Cliquez pour révéler ↓</p></div></div><div class="flashcard-back"><p>${fc.a}</p></div></div></div>`).join('');}
+  function shuffleFlashcards(){shuffled=shuffled.sort(()=>Math.random()-0.5);renderFlashcards();}
+
+  // MPM CANVAS VISUALISER
+  const canvas=document.getElementById('mpmCanvas');
+  const ctx=canvas.getContext('2d');
+
+  let graphData=null;
+
+  function loadExampleSmall(){
+    graphData={
+      nodes:[
+        {id:'D',x:80,y:200,label:'Début',dur:0,tot:0,tard:0,mt:0,critical:true},
+        {id:'A',x:260,y:120,label:'A',dur:5,tot:0,tard:0,mt:0,critical:true},
+        {id:'B',x:260,y:280,label:'B',dur:3,tot:0,tard:10,mt:10,critical:false},
+        {id:'C',x:500,y:200,label:'C',dur:8,tot:5,tard:5,mt:0,critical:true},
+        {id:'F',x:700,y:200,label:'Fin',dur:0,tot:13,tard:13,mt:0,critical:true},
+      ],
+      edges:[
+        {from:'D',to:'A',delay:0,critical:true},
+        {from:'D',to:'B',delay:0,critical:false},
+        {from:'A',to:'C',delay:0,critical:true},
+        {from:'B',to:'C',delay:0,critical:false},
+        {from:'C',to:'F',delay:0,critical:true},
+      ]
+    };
+    drawGraph();
+  }
+
+  function loadExampleFull(){
+    graphData={
+      nodes:[
+        {id:'D',x:60,y:200,label:'Début',dur:0,tot:0,tard:0,mt:0,critical:true},
+        {id:'A',x:220,y:100,label:'A (5j)',dur:5,tot:0,tard:0,mt:0,critical:true},
+        {id:'B',x:220,y:300,label:'B (3j)',dur:3,tot:0,tard:10,mt:10,critical:false},
+        {id:'C',x:420,y:100,label:'C (4j)',dur:4,tot:5,tard:5,mt:0,critical:true},
+        {id:'E',x:420,y:300,label:'E (6j)',dur:6,tot:3,tard:7,mt:4,critical:false},
+        {id:'F',x:640,y:200,label:'Fin',dur:0,tot:9,tard:9,mt:0,critical:true},
+      ],
+      edges:[
+        {from:'D',to:'A',delay:0,critical:true},
+        {from:'D',to:'B',delay:0,critical:false},
+        {from:'A',to:'C',delay:0,critical:true},
+        {from:'B',to:'C',delay:0,critical:false},
+        {from:'B',to:'E',delay:0,critical:false},
+        {from:'C',to:'F',delay:0,critical:true},
+        {from:'E',to:'F',delay:0,critical:false},
+      ]
+    };
+    drawGraph();
+  }
+
+  function drawGraph(){
+    if(!graphData) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // Draw edges
+    graphData.edges.forEach(e=>{
+      const from=graphData.nodes.find(n=>n.id===e.from);
+      const to=graphData.nodes.find(n=>n.id===e.to);
+      ctx.beginPath();
+      ctx.moveTo(from.x,from.y);
+      ctx.lineTo(to.x,to.y);
+      ctx.strokeStyle=e.critical?'rgba(167,139,250,0.8)':'rgba(255,255,255,0.15)';
+      ctx.lineWidth=e.critical?3:1.5;
+      ctx.stroke();
+      // Arrow
+      const angle=Math.atan2(to.y-from.y,to.x-from.x);
+      const arrowX=to.x-30*Math.cos(angle);
+      const arrowY=to.y-30*Math.sin(angle);
+      ctx.beginPath();
+      ctx.moveTo(arrowX,arrowY);
+      ctx.lineTo(arrowX-10*Math.cos(angle-0.4),arrowY-10*Math.sin(angle-0.4));
+      ctx.lineTo(arrowX-10*Math.cos(angle+0.4),arrowY-10*Math.sin(angle+0.4));
+      ctx.closePath();
+      ctx.fillStyle=e.critical?'rgba(167,139,250,0.8)':'rgba(255,255,255,0.2)';
+      ctx.fill();
+    });
+    // Draw nodes
+    graphData.nodes.forEach(n=>{
+      const r=30;
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,r,0,Math.PI*2);
+      ctx.fillStyle=n.critical?'rgba(124,58,237,0.25)':'rgba(255,255,255,0.06)';
+      ctx.fill();
+      ctx.strokeStyle=n.critical?'#7C3AED':'rgba(255,255,255,0.2)';
+      ctx.lineWidth=2;
+      ctx.stroke();
+      // Label
+      ctx.fillStyle='#F0F4FF';
+      ctx.font='bold 11px DM Sans,sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(n.label,n.x,n.y-6);
+      // MT
+      ctx.fillStyle=n.mt===0?'#F87171':'#34D399';
+      ctx.font='10px DM Sans,sans-serif';
+      ctx.fillText('MT='+n.mt,n.x,n.y+8);
+    });
+  }
+
+  canvas.addEventListener('mousemove',e=>{
+    if(!graphData) return;
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left;
+    const my=e.clientY-rect.top;
+    let found=null;
+    graphData.nodes.forEach(n=>{
+      if(Math.hypot(mx-n.x,my-n.y)<32) found=n;
+    });
+    if(found){
+      document.getElementById('nodeInfo').innerHTML=`<strong style="color:#A78BFA">${found.label}</strong> — Durée: ${found.dur}j | Tôt: ${found.tot} | Tard: ${found.tard} | MT: <strong style="${found.mt===0?'color:#F87171':'color:#34D399'}">${found.mt}</strong> ${found.mt===0?'🔴 CRITIQUE':'✅ Non critique'}`;
+    }
+  });
+
+  // QUIZ
+  const quizData=[
+    {q:'En MPM, les tâches sont représentées par :',opts:['Des arcs','Des nœuds (sommets)','Des flèches','Des rectangles sur un axe'],ans:1},
+    {q:'En phase aller, la règle pour calculer la date au plus tôt est :',opts:['Minimum des prédécesseurs','Maximum des prédécesseurs','Moyenne des prédécesseurs','Somme des prédécesseurs'],ans:1},
+    {q:'En phase retour, la règle pour calculer la date au plus tard est :',opts:['Maximum des successeurs','Minimum des successeurs','Somme des successeurs','Aucune règle particulière'],ans:1},
+    {q:'La marge totale d\'une tâche critique est :',opts:['Positive','Négative','Nulle','Infinie'],ans:2},
+    {q:'Quelle est la principale différence entre MPM et PERT ?',opts:['MPM est plus ancien','En PERT, les tâches sont des nœuds','En MPM, les tâches sont des nœuds','Il n\'y a aucune différence'],ans:2},
+  ];
+  let quizAnswered=0,quizScore=0;
+  function initQuiz(){
+    const c=document.getElementById('quizContainer');
+    if(c.innerHTML&&quizAnswered<quizData.length)return;
+    quizAnswered=0;quizScore=0;
+    document.getElementById('quizResult').style.display='none';
+    c.innerHTML=quizData.map((q,qi)=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px"><p style="font-weight:600;margin-bottom:16px;font-size:0.95rem"><span style="color:#A78BFA;margin-right:8px">${qi+1}.</span>${q.q}</p>${q.opts.map((opt,oi)=>`<div class="quiz-option" data-qi="${qi}" data-oi="${oi}" onclick="answerQuiz(${qi},${oi},${q.ans},this)">${opt}</div>`).join('')}</div>`).join('');
+  }
+  function answerQuiz(qi,oi,ans,el){
+    const s=document.querySelectorAll(`[data-qi="${qi}"]`);
+    s.forEach(x=>x.classList.add('disabled'));
+    if(oi===ans){el.classList.add('correct');quizScore++;}else{el.classList.add('wrong');s[ans].classList.add('correct');}
+    quizAnswered++;
+    if(quizAnswered===quizData.length){
+      setTimeout(()=>{
+        const pct=quizScore/quizData.length;
+        document.getElementById('quizEmoji').textContent=pct>=0.8?'🎉':pct>=0.6?'👍':'📚';
+        document.getElementById('quizScore').textContent=quizScore+' / '+quizData.length;
+        document.getElementById('quizMsg').textContent=pct>=0.8?'Excellent ! Vous maîtrisez la MPM.':pct>=0.6?'Bien ! Relisez les phases aller/retour.':'Continuez — relisez la fiche de synthèse.';
+        document.getElementById('quizResult').style.display='block';
+      },600);
+    }
+  }
+  function resetQuiz(){document.getElementById('quizContainer').innerHTML='';initQuiz();}
+
+  // Init canvas size responsive
+  function resizeCanvas(){
+    const w=canvas.parentElement.clientWidth;
+    canvas.width=w;
+    canvas.height=Math.min(420,w*0.5);
+    if(graphData) drawGraph();
+  }
+  window.addEventListener('resize',resizeCanvas);
+  setTimeout(()=>{resizeCanvas();loadExampleFull();},100);
+</script>
+</body>
+</html>
