@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrice GANTT — PlanControl Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .quiz-option { cursor: pointer; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; transition: all 0.2s; font-size: 0.92rem; }
+    .quiz-option:hover { border-color: rgba(5,150,105,0.4); background: rgba(5,150,105,0.06); }
+    .quiz-option.correct { border-color: #10B981; background: rgba(16,185,129,0.1); color: #10B981; }
+    .quiz-option.wrong { border-color: #EF4444; background: rgba(239,68,68,0.1); color: #EF4444; }
+    .quiz-option.disabled { pointer-events: none; opacity: 0.6; }
+    .flashcard { perspective: 600px; cursor: pointer; }
+    .flashcard-inner { position: relative; width: 100%; min-height: 140px; transition: transform 0.5s; transform-style: preserve-3d; }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; padding: 24px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .flashcard-front { background: var(--surface); border: 1px solid var(--border); }
+    .flashcard-back { background: rgba(5,150,105,0.1); border: 1px solid rgba(5,150,105,0.3); transform: rotateY(180deg); }
+    .flashcard-back p { color: var(--text); font-size: 0.92rem; line-height: 1.6; }
+    .flashcard-front p { color: var(--text-muted); font-weight: 600; }
+    .fc-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; }
+    .progress-bar-container { background: rgba(255,255,255,0.06); border-radius: 100px; height: 6px; margin-bottom: 32px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #059669, #10B981); border-radius: 100px; transition: width 0.5s ease; }
+    /* GANTT BUILDER */
+    .gantt-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; overflow-x: auto; display: block; }
+    .gantt-table th { background: rgba(255,255,255,0.06); padding: 8px 10px; text-align: center; border: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+    .gantt-table td { padding: 8px 10px; border: 1px solid var(--border); text-align: center; }
+    .gantt-table td:first-child { text-align: left; font-weight: 500; min-width: 120px; }
+    .gantt-cell { width: 36px; height: 32px; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+    .gantt-cell.active { background: var(--gantt-color, #059669); box-shadow: 0 0 8px rgba(5,150,105,0.4); }
+    .gantt-cell.inactive { background: rgba(255,255,255,0.04); }
+    .gantt-cell:hover { transform: scale(1.15); }
+    .task-input { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 0.85rem; width: 100%; outline: none; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Plan<span>Control</span> Academy</a>
+      <ul class="nav-links">
+        <li><a href="index.html#cours">← Tous les cours</a></li>
+        <li><a href="cours-budget.html">Budget</a></li>
+        <li><a href="cours-mpm.html">MPM</a></li>
+        <li><a href="paiement.html">Premium</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="course-hero" style="background: radial-gradient(ellipse 80% 60% at 60% 50%, rgba(5,150,105,0.12) 0%, transparent 70%);">
+    <div class="course-hero-inner">
+      <div class="course-breadcrumb">
+        <a href="index.html">Accueil</a>
+        <span>›</span>
+        <span>Matrice GANTT</span>
+      </div>
+      <div class="course-header-badges">
+        <span class="hero-badge" style="background:rgba(5,150,105,0.15);border-color:rgba(5,150,105,0.3);color:#34D399">Module 02 · Planification</span>
+        <span class="hero-badge" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:#34D399">Accès libre</span>
+      </div>
+      <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,5vw,3.8rem);letter-spacing:-2px;line-height:1.1;margin:16px 0 20px">Matrice<br><em style="color:#34D399">GANTT</em></h1>
+      <p style="color:var(--text-muted);font-size:1.05rem;line-height:1.7;max-width:560px;margin-bottom:32px">Construisez et interprétez un diagramme de Gantt pour planifier les tâches, gérer les ressources et visualiser l'avancement d'un projet.</p>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">📄 <span>Fiche de synthèse</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">✏️ <span>2 exercices pratiques</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🎬 <span>Vidéo explicative</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🃏 <span>Flashcards</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🏗️ <span>Constructeur Gantt</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div style="max-width:900px;margin:0 auto;padding:0 32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:0.82rem;color:var(--text-muted)">Progression du cours</span>
+      <span id="progressPct" style="font-size:0.82rem;color:#34D399;font-weight:600">0%</span>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="course-page">
+    <div class="course-tabs-wrapper">
+      <div class="tabs" id="courseTabs">
+        <button class="tab-btn active" onclick="switchTab('fiche',this)">📄 Fiche de synthèse</button>
+        <button class="tab-btn" onclick="switchTab('flashcards',this)">🃏 Flashcards</button>
+        <button class="tab-btn" onclick="switchTab('constructeur',this)">🏗️ Constructeur Gantt</button>
+        <button class="tab-btn" onclick="switchTab('exercices',this)">✏️ Exercices</button>
+        <button class="tab-btn" onclick="switchTab('video',this)">🎬 Vidéo</button>
+        <button class="tab-btn" onclick="switchTab('quiz',this)">🎯 Quiz rapide</button>
+      </div>
+    </div>
+
+    <div class="course-content">
+
+      <!-- FICHE -->
+      <div class="tab-content active" id="tab-fiche">
+        <div class="fiche-header">
+          <h2>📄 Fiche de synthèse</h2>
+          <p>Les fondamentaux du diagramme de Gantt expliqués clairement</p>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">1</span>Définition et utilité</h3>
+          <p>Le <strong>diagramme de Gantt</strong>, inventé par Henry Gantt (1910), est un outil graphique de planification et de suivi de projet. Il représente :</p>
+          <ul class="fiche-list">
+            <li>Les <strong>tâches</strong> du projet sur l'axe vertical</li>
+            <li>La <strong>durée de chaque tâche</strong> sous forme de barres horizontales</li>
+            <li>Les <strong>dépendances</strong> entre les tâches (liaisons)</li>
+            <li>L'<strong>avancement</strong> réel par rapport au planifié</li>
+          </ul>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">2</span>Les types de liaisons entre tâches</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+              <strong style="color:#34D399;font-size:0.85rem">FD — Fin-Début</strong>
+              <p style="margin-top:6px;font-size:0.85rem;color:var(--text-muted)">B commence quand A est <strong>terminée</strong>. Le plus courant.</p>
+              <div style="margin-top:10px;display:flex;align-items:center;gap:4px;font-size:0.75rem">
+                <div style="background:#059669;height:16px;width:60px;border-radius:4px"></div>
+                <span>→</span>
+                <div style="background:#0891b2;height:16px;width:70px;border-radius:4px"></div>
+              </div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+              <strong style="color:#34D399;font-size:0.85rem">DD — Début-Début</strong>
+              <p style="margin-top:6px;font-size:0.85rem;color:var(--text-muted)">B commence quand A <strong>commence</strong>. Tâches parallèles.</p>
+              <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px;font-size:0.75rem">
+                <div style="background:#059669;height:16px;width:60px;border-radius:4px"></div>
+                <div style="background:#0891b2;height:16px;width:70px;border-radius:4px"></div>
+              </div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+              <strong style="color:#34D399;font-size:0.85rem">FF — Fin-Fin</strong>
+              <p style="margin-top:6px;font-size:0.85rem;color:var(--text-muted)">B termine quand A <strong>se termine</strong>.</p>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+              <strong style="color:#34D399;font-size:0.85rem">DF — Début-Fin</strong>
+              <p style="margin-top:6px;font-size:0.85rem;color:var(--text-muted)">B termine quand A <strong>commence</strong>. Très rare.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">3</span>Notions de marges</h3>
+          <div style="background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.2);border-radius:12px;padding:20px;margin-top:12px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div>
+                <strong style="color:#34D399">Marge totale (MT)</strong>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-top:6px">Retard maximum sans retarder la fin du projet.</p>
+                <p style="font-size:0.85rem;margin-top:4px">MT = Date au plus tard − Date au plus tôt</p>
+              </div>
+              <div>
+                <strong style="color:#34D399">Marge libre (ML)</strong>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-top:6px">Retard maximum sans affecter les tâches suivantes.</p>
+                <p style="font-size:0.85rem;margin-top:4px">ML ≤ MT (toujours)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">4</span>Le chemin critique</h3>
+          <p>Le <strong>chemin critique</strong> est la séquence de tâches dont la durée cumulée est la plus longue. Il détermine la durée minimale du projet.</p>
+          <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px;margin-top:12px">
+            <strong style="color:#F87171;font-size:0.88rem">⚠️ Propriétés du chemin critique :</strong>
+            <ul style="margin-top:8px;margin-left:20px;line-height:2;font-size:0.88rem;color:var(--text-muted)">
+              <li>Les tâches critiques ont une <strong>marge totale nulle</strong></li>
+              <li>Tout retard sur une tâche critique retarde le projet entier</li>
+              <li>Il peut exister <strong>plusieurs chemins critiques</strong></li>
+              <li>Il représente la <strong>durée incompressible</strong> du projet</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">5</span>Étapes de construction d'un Gantt</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:28px;height:28px;background:rgba(5,150,105,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#34D399;flex-shrink:0;font-size:0.82rem">1</span>
+              <div><strong style="font-size:0.9rem">Lister toutes les tâches</strong><p style="color:var(--text-muted);font-size:0.85rem;margin-top:2px">Décomposition en tâches élémentaires (WBS)</p></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:28px;height:28px;background:rgba(5,150,105,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#34D399;flex-shrink:0;font-size:0.82rem">2</span>
+              <div><strong style="font-size:0.9rem">Estimer les durées</strong><p style="color:var(--text-muted);font-size:0.85rem;margin-top:2px">En jours, semaines ou heures selon le projet</p></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:28px;height:28px;background:rgba(5,150,105,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#34D399;flex-shrink:0;font-size:0.82rem">3</span>
+              <div><strong style="font-size:0.9rem">Identifier les dépendances</strong><p style="color:var(--text-muted);font-size:0.85rem;margin-top:2px">Quelle tâche doit précéder quelle autre ?</p></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:28px;height:28px;background:rgba(5,150,105,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#34D399;flex-shrink:0;font-size:0.82rem">4</span>
+              <div><strong style="font-size:0.9rem">Tracer le diagramme</strong><p style="color:var(--text-muted);font-size:0.85rem;margin-top:2px">Positionner les barres sur un axe temporel</p></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:28px;height:28px;background:rgba(5,150,105,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#34D399;flex-shrink:0;font-size:0.82rem">5</span>
+              <div><strong style="font-size:0.9rem">Identifier le chemin critique</strong><p style="color:var(--text-muted);font-size:0.85rem;margin-top:2px">Tâches sans marge — à surveiller en priorité</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:18px;margin-top:24px">
+          <strong style="color:var(--accent-gold);font-size:0.85rem">💡 À RETENIR</strong>
+          <p style="margin-top:8px;font-size:0.9rem;color:var(--text-muted)">Le Gantt est un outil de communication autant que de planification. Un bon Gantt est lisible en un coup d'œil et permet à toute l'équipe de savoir où en est le projet.</p>
+        </div>
+      </div>
+
+      <!-- FLASHCARDS -->
+      <div class="tab-content" id="tab-flashcards">
+        <div class="fiche-header">
+          <h2>🃏 Flashcards interactives</h2>
+          <p>Cliquez sur une carte pour révéler la définition</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px" id="flashcardsGrid"></div>
+        <div style="text-align:center;margin-top:28px">
+          <button onclick="shuffleFlashcards()" style="background:rgba(5,150,105,0.12);border:1px solid rgba(5,150,105,0.25);color:#34D399;padding:10px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s">🔀 Mélanger les cartes</button>
+        </div>
+      </div>
+
+      <!-- CONSTRUCTEUR GANTT -->
+      <div class="tab-content" id="tab-constructeur">
+        <div class="fiche-header">
+          <h2>🏗️ Constructeur de Gantt interactif</h2>
+          <p>Cliquez sur les cases pour planifier vos tâches. Nommez-les sur la gauche !</p>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+          <button onclick="addTask()" style="background:rgba(5,150,105,0.12);border:1px solid rgba(5,150,105,0.25);color:#34D399;padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer">+ Ajouter une tâche</button>
+          <button onclick="clearGantt()" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#F87171;padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer">🗑 Effacer tout</button>
+          <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+            <label style="font-size:0.78rem;color:var(--text-muted)">Unité de temps :</label>
+            <select id="timeUnit" onchange="renderGantt()" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;outline:none">
+              <option value="Semaine">Semaines</option>
+              <option value="Jour">Jours</option>
+              <option value="Mois">Mois</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+          <table class="gantt-table" id="ganttTable"></table>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text-muted)"><div style="width:20px;height:12px;background:#059669;border-radius:3px"></div>Planifié</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text-muted)"><div style="width:20px;height:12px;background:rgba(239,68,68,0.6);border-radius:3px"></div>Tâche critique (coloriez en rouge)</div>
+        </div>
+        <div style="margin-top:20px;background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.2);border-radius:10px;padding:14px">
+          <strong style="font-size:0.82rem;color:#34D399">💡 Durée totale détectée : <span id="ganttDuration">—</span></strong>
+        </div>
+      </div>
+
+      <!-- EXERCICES -->
+      <div class="tab-content" id="tab-exercices">
+        <div class="fiche-header">
+          <h2>✏️ Exercices d'entraînement</h2>
+          <p>Construisez et analysez des diagrammes de Gantt</p>
+        </div>
+
+        <div class="exercice-block">
+          <div class="exercice-header">
+            <span class="ex-badge" style="background:rgba(5,150,105,0.15);border-color:rgba(5,150,105,0.3);color:#34D399">Exercice 1</span>
+            <span class="ex-level" style="background:rgba(16,185,129,0.1);color:#34D399;border-color:rgba(16,185,129,0.25)">Niveau : Fondamental</span>
+          </div>
+          <h3>Construction d'un Gantt simple — Projet de site web</h3>
+          <div class="enonce">
+            <p><strong>Contexte :</strong> Une startup doit lancer son site web. Le chef de projet identifie les tâches suivantes :</p>
+            <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:0.88rem">
+              <thead><tr style="background:rgba(255,255,255,0.06)"><th style="padding:8px 12px;text-align:left;border:1px solid var(--border)">Tâche</th><th style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Durée (sem.)</th><th style="padding:8px 12px;text-align:center;border:1px solid var(--border)">Prédécesseurs</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">A — Cahier des charges</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">2</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">—</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">B — Design UI/UX</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">3</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">A</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">C — Développement back-end</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">4</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">A</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">D — Développement front-end</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">3</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">B, C</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">E — Tests & recettes</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">2</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">D</td></tr>
+                <tr><td style="padding:8px 12px;border:1px solid var(--border)">F — Mise en ligne</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">1</td><td style="padding:8px 12px;text-align:center;border:1px solid var(--border)">E</td></tr>
+              </tbody>
+            </table>
+            <strong>Questions :</strong>
+            <ol style="margin:8px 0 0 20px;line-height:2">
+              <li>Construisez le diagramme de Gantt (utilisez le constructeur interactif !)</li>
+              <li>Quelle est la durée totale du projet ?</li>
+              <li>Identifiez le chemin critique</li>
+            </ol>
+          </div>
+          <button class="btn-corrige" onclick="toggleCorrige('corrige1', this)">Voir le corrigé →</button>
+          <div class="corrige" id="corrige1">
+            <strong style="color:#34D399">Planning des tâches (dates au plus tôt) :</strong>
+            <ul style="margin-top:8px;margin-left:20px;line-height:2;font-size:0.88rem">
+              <li>A : Semaines 1-2</li>
+              <li>B : Semaines 3-5</li>
+              <li>C : Semaines 3-6</li>
+              <li>D : Semaines 7-9 (attend C, qui finit en S6)</li>
+              <li>E : Semaines 10-11</li>
+              <li>F : Semaine 12</li>
+            </ul>
+            <strong style="color:#34D399;display:block;margin-top:12px">Durée totale : 12 semaines</strong>
+            <strong style="color:#F87171;display:block;margin-top:8px">Chemin critique : A → C → D → E → F</strong>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-top:6px">La tâche B a une marge de 1 semaine (peut débuter en S3 ou S4 sans impact).</p>
+          </div>
+        </div>
+
+        <div class="exercice-block">
+          <div class="exercice-header">
+            <span class="ex-badge" style="background:rgba(5,150,105,0.15);border-color:rgba(5,150,105,0.3);color:#34D399">Exercice 2</span>
+            <span class="ex-level" style="background:rgba(245,158,11,0.1);color:#FCD34D;border-color:rgba(245,158,11,0.25)">Niveau : Intermédiaire</span>
+          </div>
+          <h3>Analyse d'un Gantt existant — Retard en cours de projet</h3>
+          <div class="enonce">
+            <p><strong>Contexte :</strong> Un projet de 10 semaines est en cours. À la fin de la semaine 5, vous constatez :</p>
+            <ul style="margin:12px 0 0 20px;line-height:2">
+              <li>Tâche A (S1-S3) : <strong>terminée</strong> avec 1 semaine de retard (S1-S4)</li>
+              <li>Tâche B (S2-S4, parallèle à A) : <strong>terminée</strong> à temps</li>
+              <li>Tâche C (débutait S4, critique, durée 4 sem.) : <strong>démarrée</strong> en S5</li>
+            </ul>
+            <p style="margin-top:12px"><strong>Questions :</strong></p>
+            <ol style="margin:8px 0 0 20px;line-height:2">
+              <li>Quelle est la nouvelle date de fin prévisionnelle du projet ?</li>
+              <li>Quelles mesures peut-on prendre pour rattraper le retard ?</li>
+              <li>Quelle est l'importance du suivi d'avancement en cours de projet ?</li>
+            </ol>
+          </div>
+          <button class="btn-corrige" onclick="toggleCorrige('corrige2', this)">Voir le corrigé →</button>
+          <div class="corrige" id="corrige2">
+            <strong style="color:#34D399">1. Nouvelle date de fin :</strong>
+            <p>C devait finir en S7 (S4+4 sem.), mais elle démarre en S5, donc elle finira en S8. Avec les tâches restantes après C (supposées non critiques), le projet terminera en <strong>S11 au lieu de S10 → 1 semaine de retard</strong>.</p>
+            <br>
+            <strong style="color:#34D399">2. Mesures correctives :</strong>
+            <ul style="margin-top:6px;margin-left:20px;line-height:2;font-size:0.88rem">
+              <li><strong>Fast-tracking</strong> : démarrer une tâche suivante plus tôt en parallèle (si possible)</li>
+              <li><strong>Crashing</strong> : ajouter des ressources sur C pour la compresser</li>
+              <li>Réviser le périmètre ou renégocier les délais avec le client</li>
+            </ul>
+            <br>
+            <strong style="color:#34D399">3. Importance du suivi :</strong>
+            <p style="font-size:0.88rem">Plus un retard est détecté tôt, plus les options correctives sont nombreuses et peu coûteuses. Le Gantt est mis à jour régulièrement (en couleur d'avancement) pour visualiser instantanément les dérives.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDÉO -->
+      <div class="tab-content" id="tab-video">
+        <div class="fiche-header">
+          <h2>🎬 Vidéo explicative</h2>
+          <p>Tout ce qu'il faut savoir sur le diagramme de Gantt en vidéo</p>
+        </div>
+        <div class="video-section">
+          <div class="video-placeholder" id="videoPlaceholder">
+            <div class="video-play" onclick="showVideo()" style="background:var(--accent-green)">▶</div>
+            <h3>Construire et lire un diagramme de Gantt</h3>
+            <p>Durée estimée : 10–14 min · Avec exemples pratiques</p>
+          </div>
+          <div class="video-embed" id="videoEmbed">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Diagramme de Gantt" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-top:28px">
+          <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:16px">📝 Points clés abordés dans la vidéo</h3>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">00:00</span><span style="font-size:0.88rem">Historique et définition du diagramme de Gantt</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">03:00</span><span style="font-size:0.88rem">Construction pas à pas avec un exemple concret</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">07:00</span><span style="font-size:0.88rem">Identification du chemin critique et des marges</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">11:00</span><span style="font-size:0.88rem">Suivi d'avancement et gestion des retards</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUIZ -->
+      <div class="tab-content" id="tab-quiz">
+        <div class="fiche-header">
+          <h2>🎯 Quiz rapide</h2>
+          <p>5 questions sur la matrice Gantt</p>
+        </div>
+        <div id="quizContainer"></div>
+        <div id="quizResult" style="display:none;text-align:center;padding:32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-top:20px">
+          <div style="font-size:3rem;margin-bottom:12px" id="quizEmoji"></div>
+          <div style="font-family:'DM Serif Display',serif;font-size:2rem;margin-bottom:8px" id="quizScore"></div>
+          <p id="quizMsg" style="color:var(--text-muted);margin-bottom:20px"></p>
+          <button onclick="resetQuiz()" style="background:rgba(5,150,105,0.15);border:1px solid rgba(5,150,105,0.3);color:#34D399;padding:10px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.9rem">Recommencer le quiz</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="max-width:900px;margin:0 auto;padding:0 32px 80px">
+    <div class="premium-banner">
+      <div>
+        <h3>👨‍🏫 Allez plus loin avec le Premium</h3>
+        <p>Séances en physique avec un professeur expert — correction personnalisée — cas réels d'entreprise</p>
+      </div>
+      <a href="paiement.html" class="btn btn-premium">Accéder au Premium — 49€</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">Plan<span>Control</span> Academy</div>
+      <p>Plateforme de formation — Projet académique M1</p>
+      <div class="footer-links">
+        <a href="cours-budget.html">Budget</a>
+        <a href="cours-gantt.html">Gantt</a>
+        <a href="cours-mpm.html">MPM</a>
+        <a href="paiement.html">Premium</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  // --- TABS ---
+  const tabProgress = { fiche:20, flashcards:40, constructeur:60, exercices:80, video:90, quiz:100 };
+  let visited = new Set(['fiche']);
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    btn.classList.add('active');
+    visited.add(id);
+    updateProgress();
+    if(id==='flashcards') renderFlashcards();
+    if(id==='quiz') initQuiz();
+    if(id==='constructeur') renderGantt();
+  }
+  function updateProgress() {
+    const maxPct = Math.max(...[...visited].map(t=>tabProgress[t]||0));
+    document.getElementById('progressBar').style.width=maxPct+'%';
+    document.getElementById('progressPct').textContent=maxPct+'%';
+  }
+  function showVideo() {
+    document.getElementById('videoPlaceholder').style.display='none';
+    document.getElementById('videoEmbed').classList.add('show');
+  }
+  function toggleCorrige(id,btn) {
+    const el=document.getElementById(id);
+    el.classList.toggle('show');
+    btn.textContent=el.classList.contains('show')?'Masquer le corrigé ↑':'Voir le corrigé →';
+  }
+
+  // --- FLASHCARDS ---
+  const flashcardsData = [
+    {q:'Diagramme de Gantt',a:'Outil graphique représentant les tâches d\'un projet sous forme de barres horizontales sur un axe temporel.'},
+    {q:'Chemin critique',a:'Séquence de tâches de durée totale maximale. Un retard sur ces tâches retarde le projet entier.'},
+    {q:'Marge totale',a:'Retard maximum qu\'une tâche peut accuser sans retarder la date de fin du projet. MT = Date au plus tard − Date au plus tôt.'},
+    {q:'Liaison Fin-Début (FD)',a:'La tâche B ne peut commencer qu\'après la fin de la tâche A. Type de dépendance le plus courant.'},
+    {q:'Tâche critique',a:'Tâche dont la marge totale est nulle. Elle appartient au chemin critique et ne peut souffrir aucun retard.'},
+    {q:'Fast-tracking',a:'Technique de compression des délais : démarrer des tâches en parallèle au lieu de les enchaîner séquentiellement.'},
+    {q:'Crashing',a:'Ajout de ressources supplémentaires sur les tâches critiques pour réduire leur durée et compresser le planning.'},
+    {q:'WBS (Work Breakdown Structure)',a:'Décomposition hiérarchique du travail en tâches élémentaires. Première étape avant de construire un Gantt.'},
+  ];
+  let shuffled = [...flashcardsData];
+  function renderFlashcards() {
+    document.getElementById('flashcardsGrid').innerHTML = shuffled.map(fc=>`
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div><p>${fc.q}</p><p class="fc-hint">Cliquez pour révéler ↓</p></div></div>
+          <div class="flashcard-back"><p>${fc.a}</p></div>
+        </div>
+      </div>`).join('');
+  }
+  function shuffleFlashcards() {
+    shuffled = shuffled.sort(()=>Math.random()-0.5);
+    renderFlashcards();
+  }
+
+  // --- GANTT BUILDER ---
+  let tasks = [
+    {name:'Tâche A', cells:[]},
+    {name:'Tâche B', cells:[]},
+    {name:'Tâche C', cells:[]},
+  ];
+  const N_COLS = 12;
+
+  function addTask() {
+    tasks.push({name:'Nouvelle tâche', cells:[]});
+    renderGantt();
+  }
+  function clearGantt() {
+    tasks = tasks.map(t=>({...t, cells:[]}));
+    renderGantt();
+  }
+  function toggleCell(ti, ci) {
+    const idx = tasks[ti].cells.indexOf(ci);
+    if(idx > -1) tasks[ti].cells.splice(idx,1);
+    else tasks[ti].cells.push(ci);
+    renderGantt();
+    updateGanttDuration();
+  }
+  function updateTaskName(ti, val) { tasks[ti].name = val; }
+  function updateGanttDuration() {
+    let maxCell = 0;
+    tasks.forEach(t => t.cells.forEach(c => { if(c+1 > maxCell) maxCell = c+1; }));
+    const unit = document.getElementById('timeUnit')?.value || 'Semaine';
+    document.getElementById('ganttDuration').textContent = maxCell > 0 ? maxCell + ' ' + unit.toLowerCase() + (maxCell > 1 ? 's' : '') : '—';
+  }
+  function renderGantt() {
+    const unit = document.getElementById('timeUnit')?.value || 'Semaine';
+    const table = document.getElementById('ganttTable');
+    if(!table) return;
+    const header = '<thead><tr><th style="min-width:130px">Tâches</th>' + Array.from({length:N_COLS},(_,i)=>`<th>${unit.charAt(0)}${i+1}</th>`).join('') + '</tr></thead>';
+    const body = '<tbody>' + tasks.map((t,ti) =>
+      `<tr><td><input class="task-input" value="${t.name}" onchange="updateTaskName(${ti},this.value)" /></td>` +
+      Array.from({length:N_COLS},(_,ci) =>
+        `<td><div class="gantt-cell ${t.cells.includes(ci)?'active':'inactive'}" onclick="toggleCell(${ti},${ci})"></div></td>`
+      ).join('') + '</tr>'
+    ).join('') + '</tbody>';
+    table.innerHTML = header + body;
+    updateGanttDuration();
+  }
+
+  // --- QUIZ ---
+  const quizData = [
+    {q:'Quel axe représente les tâches dans un Gantt ?',opts:['Axe horizontal','Axe vertical','Les deux','Aucun des deux'],ans:1},
+    {q:'Les tâches du chemin critique ont une marge totale de :',opts:['1 jour','Infinie','Nulle','Variable'],ans:2},
+    {q:'Le fast-tracking consiste à :',opts:['Ajouter des ressources','Réduire le périmètre','Démarrer des tâches en parallèle','Supprimer des tâches'],ans:2},
+    {q:'La liaison la plus courante dans un Gantt est :',opts:['Début-Début','Fin-Fin','Fin-Début','Début-Fin'],ans:2},
+    {q:'Si une tâche critique prend 2 jours de retard, le projet :',opts:['N\'est pas affecté','Prend 1 jour de retard','Prend 2 jours de retard','Peut rattraper automatiquement'],ans:2},
+  ];
+  let quizAnswered=0, quizScore=0;
+  function initQuiz() {
+    const c=document.getElementById('quizContainer');
+    if(c.innerHTML && quizAnswered<quizData.length) return;
+    quizAnswered=0; quizScore=0;
+    document.getElementById('quizResult').style.display='none';
+    c.innerHTML=quizData.map((q,qi)=>`
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px">
+        <p style="font-weight:600;margin-bottom:16px;font-size:0.95rem"><span style="color:#34D399;margin-right:8px">${qi+1}.</span>${q.q}</p>
+        ${q.opts.map((opt,oi)=>`<div class="quiz-option" data-qi="${qi}" data-oi="${oi}" onclick="answerQuiz(${qi},${oi},${q.ans},this)">${opt}</div>`).join('')}
+      </div>`).join('');
+  }
+  function answerQuiz(qi,oi,ans,el) {
+    const siblings=document.querySelectorAll(`[data-qi="${qi}"]`);
+    siblings.forEach(s=>s.classList.add('disabled'));
+    if(oi===ans){el.classList.add('correct');quizScore++;}
+    else{el.classList.add('wrong');siblings[ans].classList.add('correct');}
+    quizAnswered++;
+    if(quizAnswered===quizData.length) {
+      setTimeout(()=>{
+        const res=document.getElementById('quizResult');
+        const pct=quizScore/quizData.length;
+        document.getElementById('quizEmoji').textContent=pct>=0.8?'🎉':pct>=0.6?'👍':'📚';
+        document.getElementById('quizScore').textContent=quizScore+' / '+quizData.length;
+        document.getElementById('quizMsg').textContent=pct>=0.8?'Excellent ! Vous maîtrisez le Gantt.':pct>=0.6?'Bien ! Relisez les parties sur les marges.':'Continuez — relisez la fiche de synthèse.';
+        res.style.display='block';
+      },600);
+    }
+  }
+  function resetQuiz(){document.getElementById('quizContainer').innerHTML='';initQuiz();}
+</script>
+</body>
+</html>
