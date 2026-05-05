@@ -3,289 +3,606 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Articulation Budgétaire — PlanControl</title>
+  <title>Articulation Budgétaire — PlanControl Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .course-accent { --ca: #2563EB; --ca-rgb: 37,99,235; --ca-glow: rgba(37,99,235,0.3); }
+    .progress-ring { transition: stroke-dashoffset 1s ease; }
+    .quiz-option { cursor: pointer; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; transition: all 0.2s; font-size: 0.92rem; }
+    .quiz-option:hover { border-color: rgba(37,99,235,0.4); background: rgba(37,99,235,0.06); }
+    .quiz-option.correct { border-color: #10B981; background: rgba(16,185,129,0.1); color: #10B981; }
+    .quiz-option.wrong { border-color: #EF4444; background: rgba(239,68,68,0.1); color: #EF4444; }
+    .quiz-option.disabled { pointer-events: none; opacity: 0.6; }
+    .flashcard { perspective: 600px; cursor: pointer; }
+    .flashcard-inner { position: relative; width: 100%; min-height: 140px; transition: transform 0.5s; transform-style: preserve-3d; }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; padding: 24px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .flashcard-front { background: var(--surface); border: 1px solid var(--border); }
+    .flashcard-back { background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.3); transform: rotateY(180deg); }
+    .flashcard-back p { color: var(--text); font-size: 0.92rem; line-height: 1.6; }
+    .flashcard-front p { color: var(--text-muted); font-weight: 600; }
+    .fc-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; }
+    .progress-bar-container { background: rgba(255,255,255,0.06); border-radius: 100px; height: 6px; margin-bottom: 32px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #2563EB, #8B5CF6); border-radius: 100px; transition: width 0.5s ease; }
+    .schéma-budget { display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; align-items: center; gap: 0; margin: 24px 0; }
+    .schema-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+    .schema-box strong { display: block; font-size: 0.85rem; color: var(--accent-blue); margin-bottom: 4px; }
+    .schema-box span { font-size: 0.78rem; color: var(--text-muted); }
+    .schema-arrow { text-align: center; font-size: 1.4rem; color: var(--text-dim); }
+    .ecart-calc { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 16px 0; }
+    .ecart-calc input[type=number] { background: rgba(255,255,255,0.07); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; width: 120px; outline: none; transition: border-color 0.2s; }
+    .ecart-calc input:focus { border-color: rgba(37,99,235,0.5); }
+    .ecart-result { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin-top: 12px; min-height: 32px; }
+    .favorable { color: #10B981; }
+    .defavorable { color: #EF4444; }
+    @media (max-width: 600px) { .schéma-budget { grid-template-columns: 1fr; } .schema-arrow { transform: rotate(90deg); } }
+  </style>
 </head>
-<body>
+<body class="course-accent">
 
-<nav>
-  <a href="index.html" class="nav-brand">
-    <div class="nav-logo">PC</div>
-    <span class="nav-title">Plan<span>Control</span></span>
-  </a>
-  <div class="nav-links">
-    <a href="index.html">Accueil</a>
-    <a href="cours-budget.html" class="active">Cours</a>
-    <a href="paiement.html" class="nav-cta">Accès Premium</a>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Plan<span>Control</span> Academy</a>
+      <ul class="nav-links">
+        <li><a href="index.html#cours">← Tous les cours</a></li>
+        <li><a href="cours-gantt.html">Gantt</a></li>
+        <li><a href="cours-mpm.html">MPM</a></li>
+        <li><a href="paiement.html">Premium</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO COURS -->
+  <header class="course-hero" style="background: radial-gradient(ellipse 80% 60% at 60% 50%, rgba(37,99,235,0.12) 0%, transparent 70%);">
+    <div class="course-hero-inner">
+      <div class="course-breadcrumb">
+        <a href="index.html">Accueil</a>
+        <span>›</span>
+        <span>Articulation Budgétaire</span>
+      </div>
+      <div class="course-header-badges">
+        <span class="hero-badge" style="background:rgba(37,99,235,0.15);border-color:rgba(37,99,235,0.3);color:#60A5FA">Module 01 · Finance</span>
+        <span class="hero-badge" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:#34D399">Accès libre</span>
+      </div>
+      <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,5vw,3.8rem);letter-spacing:-2px;line-height:1.1;margin:16px 0 20px">Articulation<br><em style="color:#60A5FA">Budgétaire</em></h1>
+      <p style="color:var(--text-muted);font-size:1.05rem;line-height:1.7;max-width:560px;margin-bottom:32px">Comprenez la structure des budgets prévisionnels, leur articulation dans le contrôle de gestion et les mécanismes de suivi des écarts.</p>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">📄 <span>Fiche de synthèse</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">✏️ <span>2 exercices pratiques</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🎬 <span>Vidéo explicative</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🃏 <span>Flashcards</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--text-muted)">🧮 <span>Calculateur d'écarts</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PROGRESS -->
+  <div style="max-width:900px;margin:0 auto;padding:0 32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:0.82rem;color:var(--text-muted)">Progression du cours</span>
+      <span id="progressPct" style="font-size:0.82rem;color:#60A5FA;font-weight:600">0%</span>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
   </div>
-</nav>
 
-<div class="page-header">
-  <div class="page-header-inner">
-    <div class="breadcrumb">
-      <a href="index.html">Accueil</a>
-      <span>/</span>
-      <span>Module 01</span>
-    </div>
-    <h1>Articulation Budgétaire</h1>
-    <p>Construction et articulation des budgets d'une organisation : ventes, production, charges, trésorerie et bilan prévisionnel.</p>
-    <div class="tags">
-      <span class="tag">Module 01</span>
-      <span class="tag">Contrôle de gestion</span>
-      <span class="tag">Budgets</span>
-      <span class="tag">Master 1</span>
-    </div>
-  </div>
-</div>
-
-<div style="max-width:900px; margin:0 auto; padding:3rem 2rem;">
-
-  <!-- TABS NAV -->
-  <div class="tabs-nav">
-    <button class="tab-btn active" onclick="switchTab('synthese', this)">📝 Fiche de synthèse</button>
-    <button class="tab-btn" onclick="switchTab('exercices', this)">🧮 Exercices</button>
-    <button class="tab-btn" onclick="switchTab('video', this)">🎥 Vidéo</button>
-    <button class="tab-btn" onclick="switchTab('premium', this)">★ Premium</button>
-  </div>
-
-  <!-- SYNTHESE -->
-  <div id="tab-synthese" class="tab-content active">
-
-    <div class="synthese-card">
-      <div class="synthese-header">
-        <h3>1. Qu'est-ce que l'articulation budgétaire ?</h3>
-        <span class="icon">📊</span>
-      </div>
-      <div class="synthese-body">
-        <h4>Définition</h4>
-        <p>L'articulation budgétaire désigne l'ensemble des liens logiques et chronologiques qui unissent les différents budgets d'une entreprise en un système cohérent. Chaque budget est élaboré en tenant compte des contraintes et des résultats des budgets qui le précèdent.</p>
-        <h4>Les 5 budgets fondamentaux</h4>
-        <ul>
-          <li><strong>Budget des ventes</strong> — Point de départ : prévisions commerciales (quantités × prix)</li>
-          <li><strong>Budget de production</strong> — Déduit des ventes et des variations de stocks souhaités</li>
-          <li><strong>Budget des approvisionnements</strong> — Matières premières nécessaires à la production</li>
-          <li><strong>Budget des charges de structure</strong> — Frais fixes : salaires, loyers, amortissements</li>
-          <li><strong>Budget de trésorerie</strong> — Synthèse des encaissements/décaissements prévisionnels</li>
-        </ul>
-        <h4>La chaîne d'articulation</h4>
-        <p>Les budgets s'enchaînent selon une logique descendante : <strong>Ventes → Production → Approvisionnements → Charges → Trésorerie → Bilan prévisionnel.</strong> Une erreur dans le budget des ventes se répercute en cascade sur tous les autres budgets.</p>
+  <!-- TABS -->
+  <div class="course-page">
+    <div class="course-tabs-wrapper">
+      <div class="tabs" id="courseTabs">
+        <button class="tab-btn active" onclick="switchTab('fiche',this)" data-tab="fiche">📄 Fiche de synthèse</button>
+        <button class="tab-btn" onclick="switchTab('flashcards',this)" data-tab="flashcards">🃏 Flashcards</button>
+        <button class="tab-btn" onclick="switchTab('calculateur',this)" data-tab="calculateur">🧮 Calculateur</button>
+        <button class="tab-btn" onclick="switchTab('exercices',this)" data-tab="exercices">✏️ Exercices</button>
+        <button class="tab-btn" onclick="switchTab('video',this)" data-tab="video">🎬 Vidéo</button>
+        <button class="tab-btn" onclick="switchTab('quiz',this)" data-tab="quiz">🎯 Quiz rapide</button>
       </div>
     </div>
 
-    <div class="synthese-card">
-      <div class="synthese-header">
-        <h3>2. Construction du budget des ventes</h3>
-        <span class="icon">💰</span>
-      </div>
-      <div class="synthese-body">
-        <h4>Formule de base</h4>
-        <p>Chiffre d'affaires prévisionnel = Σ (Quantités vendues × Prix unitaire de vente)</p>
-        <h4>Méthodes de prévision</h4>
-        <ul>
-          <li>Méthode des moindres carrés (tendance linéaire)</li>
-          <li>Lissage exponentiel pour séries avec trend</li>
-          <li>Décomposition saisonnière (coefficient saisonnier × tendance)</li>
-          <li>Enquêtes commerciales et données de marché</li>
-        </ul>
-        <h4>Coefficient saisonnier</h4>
-        <p>Pour intégrer la saisonnalité : Ventes prévisionnelles du mois = Tendance × Coefficient saisonnier du mois</p>
-      </div>
-    </div>
+    <div class="course-content">
 
-    <div class="synthese-card">
-      <div class="synthese-header">
-        <h3>3. Budget de trésorerie</h3>
-        <span class="icon">🏦</span>
-      </div>
-      <div class="synthese-body">
-        <h4>Structure</h4>
-        <ul>
-          <li>Solde initial de trésorerie (repris de la période précédente)</li>
-          <li>+ Encaissements (ventes TTC, emprunts, cessions d'actifs…)</li>
-          <li>− Décaissements (achats TTC, salaires, impôts, remboursements…)</li>
-          <li>= Solde final de trésorerie</li>
-        </ul>
-        <h4>Décalages de paiement</h4>
-        <p>Attention aux délais clients et fournisseurs : une vente réalisée en janvier peut n'être encaissée qu'en mars si le délai client est de 60 jours. Ces décalages sont cruciaux pour l'exactitude du budget de trésorerie.</p>
-        <button class="download-btn" onclick="alert('📥 Fiche PDF disponible en version complète !')">
-          ⬇ Télécharger la fiche PDF
-        </button>
-      </div>
-    </div>
-
-  </div><!-- /synthese -->
-
-  <!-- EXERCICES -->
-  <div id="tab-exercices" class="tab-content">
-
-    <!-- EX 1 -->
-    <div class="exercice-card" id="ex1">
-      <div class="exercice-header" onclick="toggleEx('ex1')">
-        <div class="exercice-header-left">
-          <div class="ex-number">01</div>
-          <div>
-            <div class="ex-title">Construction du budget des ventes trimestriel</div>
-            <span class="ex-level level-easy">Facile</span>
-          </div>
+      <!-- FICHE DE SYNTHÈSE -->
+      <div class="tab-content active" id="tab-fiche">
+        <div class="fiche-header">
+          <h2>📄 Fiche de synthèse</h2>
+          <p>Tous les concepts clés de l'articulation budgétaire, résumés et structurés</p>
         </div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="exercice-body">
-        <div class="enonce">
-          <p>L'entreprise <strong>FinoTech</strong> vend deux produits A et B. Les prévisions de vente pour le T1 sont les suivantes :</p>
-          <div class="enonce-data">
-            <table>
-              <tr><th>Mois</th><th>Produit A (unités)</th><th>Prix A (€)</th><th>Produit B (unités)</th><th>Prix B (€)</th></tr>
-              <tr><td>Janvier</td><td>200</td><td>50</td><td>150</td><td>80</td></tr>
-              <tr><td>Février</td><td>240</td><td>50</td><td>180</td><td>80</td></tr>
-              <tr><td>Mars</td><td>300</td><td>52</td><td>200</td><td>82</td></tr>
-            </table>
-          </div>
-          <p>Les clients paient à <strong>30 jours fin de mois</strong>. La TVA est de <strong>20%</strong>.</p>
-          <p style="margin-top:1rem"><strong>Travail demandé :</strong></p>
-          <ol style="margin-left:1.5rem; font-size:0.875rem; color:var(--text-muted)">
-            <li>Calculer le chiffre d'affaires HT mensuel par produit et total.</li>
-            <li>Calculer le chiffre d'affaires TTC.</li>
-            <li>Établir le budget des encaissements (T1 + décalage en avril).</li>
-          </ol>
-        </div>
-        <button class="correction-toggle" onclick="toggleCorrection('corr1')">Voir la correction</button>
-        <div class="correction" id="corr1">
-          <h5>✅ Correction — Budget des ventes T1</h5>
-          <p><strong>CA HT mensuel :</strong></p>
-          <ul style="margin:0.5rem 0 0.5rem 1rem">
-            <li>Janvier : (200×50) + (150×80) = 10 000 + 12 000 = <strong>22 000 €</strong></li>
-            <li>Février : (240×50) + (180×80) = 12 000 + 14 400 = <strong>26 400 €</strong></li>
-            <li>Mars : (300×52) + (200×82) = 15 600 + 16 400 = <strong>32 000 €</strong></li>
-            <li>Total T1 HT = <strong>80 400 €</strong></li>
-          </ul>
-          <p><strong>CA TTC :</strong> Janvier : 26 400 € | Février : 31 680 € | Mars : 38 400 €</p>
-          <p><strong>Encaissements :</strong> paiement à 30j fin de mois → les ventes de janvier sont encaissées fin février, celles de février fin mars, celles de mars fin avril.</p>
-          <ul style="margin:0.5rem 0 0.5rem 1rem">
-            <li>Février : encaissement des ventes janvier = <strong>26 400 €</strong></li>
-            <li>Mars : encaissement des ventes février = <strong>31 680 €</strong></li>
-            <li>Avril : encaissement des ventes mars = <strong>38 400 €</strong></li>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num">1</span>Qu'est-ce qu'un budget prévisionnel ?</h3>
+          <p>Un <strong>budget prévisionnel</strong> est une expression chiffrée des objectifs et des moyens d'une organisation sur une période future (généralement un an). Il constitue le principal outil du <strong>contrôle de gestion</strong> en permettant :</p>
+          <ul class="fiche-list">
+            <li>La <strong>planification</strong> des activités et des ressources</li>
+            <li>La <strong>coordination</strong> entre les différents services</li>
+            <li>Le <strong>contrôle</strong> des performances par analyse des écarts</li>
+            <li>La <strong>motivation</strong> des équipes via des objectifs clairs</li>
           </ul>
         </div>
-      </div>
-    </div>
 
-    <!-- EX 2 -->
-    <div class="exercice-card" id="ex2">
-      <div class="exercice-header" onclick="toggleEx('ex2')">
-        <div class="exercice-header-left">
-          <div class="ex-number">02</div>
-          <div>
-            <div class="ex-title">Budget de trésorerie — Équilibre et besoin de financement</div>
-            <span class="ex-level level-medium">Intermédiaire</span>
+        <div class="fiche-section">
+          <h3><span class="fiche-num">2</span>Hiérarchie et articulation des budgets</h3>
+          <p>Les budgets s'articulent de façon hiérarchique. Le budget général d'une entreprise se décompose en budgets fonctionnels :</p>
+          <div class="schéma-budget">
+            <div class="schema-box"><strong>Budget des Ventes</strong><span>Volume × Prix</span></div>
+            <div class="schema-arrow">→</div>
+            <div class="schema-box"><strong>Budget de Production</strong><span>Ventes ± Stocks</span></div>
+            <div class="schema-arrow">→</div>
+            <div class="schema-box"><strong>Budget des Approvisionnements</strong><span>Besoins - Stocks</span></div>
+          </div>
+          <p style="margin-top:12px">Ces budgets alimentent ensuite le <strong>budget de trésorerie</strong>, puis les <strong>états financiers prévisionnels</strong> (compte de résultat, bilan).</p>
+        </div>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num">3</span>Les types d'écarts budgétaires</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+            <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:18px">
+              <strong style="color:#34D399;font-size:0.85rem">✅ ÉCART FAVORABLE</strong>
+              <p style="margin-top:8px;font-size:0.88rem;color:var(--text-muted)">Réel &lt; Prévu (pour les charges) ou Réel &gt; Prévu (pour le CA). Résultat <strong>meilleur</strong> que prévu.</p>
+            </div>
+            <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:18px">
+              <strong style="color:#F87171;font-size:0.85rem">⚠️ ÉCART DÉFAVORABLE</strong>
+              <p style="margin-top:8px;font-size:0.88rem;color:var(--text-muted)">Réel &gt; Prévu (pour les charges) ou Réel &lt; Prévu (pour le CA). Résultat <strong>moins bon</strong> que prévu.</p>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:16px">
+            <strong style="font-size:0.88rem;color:var(--accent-blue)">📐 Formule générale :</strong>
+            <p style="font-family:'DM Serif Display',serif;font-size:1.15rem;margin-top:8px;text-align:center">Écart = Valeur Réelle − Valeur Prévisionnelle</p>
           </div>
         </div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="exercice-body">
-        <div class="enonce">
-          <p>La société <strong>Kairos</strong> dispose des informations suivantes pour le mois de <strong>mars</strong> :</p>
-          <div class="enonce-data">
-            <p><strong>Encaissements :</strong> Ventes clients = 45 000 € | Subvention reçue = 5 000 €</p>
-            <p style="margin-top:0.5rem"><strong>Décaissements :</strong> Achats fournisseurs = 28 000 € | Salaires = 12 000 € | Impôts = 3 500 € | Loyer = 2 200 €</p>
-            <p style="margin-top:0.5rem"><strong>Solde de trésorerie fin février :</strong> − 2 500 €</p>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num">4</span>Décomposition de l'écart sur charges</h3>
+          <p>L'écart global sur charges se décompose en deux sous-écarts :</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+              <strong style="color:var(--accent-blue)">Écart sur Prix</strong>
+              <p style="margin-top:8px;font-size:0.85rem;color:var(--text-muted)">(Prix réel − Prix prévu) × Qté réelle</p>
+              <p style="margin-top:4px;font-size:0.78rem;color:var(--text-dim)">Mesure l'impact du prix d'achat</p>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+              <strong style="color:var(--accent-purple)">Écart sur Quantité</strong>
+              <p style="margin-top:8px;font-size:0.85rem;color:var(--text-muted)">(Qté réelle − Qté prévue) × Prix prévu</p>
+              <p style="margin-top:4px;font-size:0.78rem;color:var(--text-dim)">Mesure l'impact du volume utilisé</p>
+            </div>
           </div>
-          <p><strong>Travail demandé :</strong></p>
-          <ol style="margin-left:1.5rem; font-size:0.875rem; color:var(--text-muted)">
-            <li>Calculer le solde de trésorerie fin mars.</li>
-            <li>L'entreprise doit maintenir un solde minimum de 3 000 €. Calculer le besoin de financement éventuel.</li>
-            <li>Proposer une solution de financement à court terme.</li>
-          </ol>
         </div>
-        <button class="correction-toggle" onclick="toggleCorrection('corr2')">Voir la correction</button>
-        <div class="correction" id="corr2">
-          <h5>✅ Correction — Budget de trésorerie mars</h5>
-          <p><strong>Total encaissements :</strong> 45 000 + 5 000 = <strong>50 000 €</strong></p>
-          <p><strong>Total décaissements :</strong> 28 000 + 12 000 + 3 500 + 2 200 = <strong>45 700 €</strong></p>
-          <p><strong>Variation nette :</strong> 50 000 − 45 700 = <strong>+ 4 300 €</strong></p>
-          <p><strong>Solde fin mars :</strong> − 2 500 + 4 300 = <strong>+ 1 800 €</strong></p>
-          <p style="margin-top:0.75rem">Le solde (+1 800 €) est inférieur au minimum requis (3 000 €). <strong>Besoin de financement = 3 000 − 1 800 = 1 200 €</strong>.</p>
-          <p><strong>Solution :</strong> Recours à une ligne de découvert bancaire ou à l'escompte de créances clients pour couvrir ce besoin à court terme.</p>
+
+        <div class="fiche-section">
+          <h3><span class="fiche-num">5</span>Le cycle budgétaire</h3>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">
+            <div style="display:flex;align-items:center;gap:16px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:32px;height:32px;background:rgba(37,99,235,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#60A5FA;flex-shrink:0;font-size:0.85rem">1</span>
+              <div><strong style="font-size:0.9rem">Élaboration</strong> <span style="color:var(--text-muted);font-size:0.85rem">— Fixation des objectifs, collecte des données, construction des budgets (oct-nov)</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:32px;height:32px;background:rgba(37,99,235,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#60A5FA;flex-shrink:0;font-size:0.85rem">2</span>
+              <div><strong style="font-size:0.9rem">Validation</strong> <span style="color:var(--text-muted);font-size:0.85rem">— Révisions, arbitrages, approbation de la direction (déc)</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:32px;height:32px;background:rgba(37,99,235,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#60A5FA;flex-shrink:0;font-size:0.85rem">3</span>
+              <div><strong style="font-size:0.9rem">Exécution</strong> <span style="color:var(--text-muted);font-size:0.85rem">— Suivi mensuel, reporting, alertes en cas d'écart significatif (jan-déc)</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+              <span style="width:32px;height:32px;background:rgba(37,99,235,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#60A5FA;flex-shrink:0;font-size:0.85rem">4</span>
+              <div><strong style="font-size:0.9rem">Analyse</strong> <span style="color:var(--text-muted);font-size:0.85rem">— Calcul et explication des écarts, actions correctives (mensuel/annuel)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:18px;margin-top:24px">
+          <strong style="color:var(--accent-gold);font-size:0.85rem">💡 À RETENIR</strong>
+          <p style="margin-top:8px;font-size:0.9rem;color:var(--text-muted)">Un budget n'est utile que s'il est suivi. L'analyse des écarts permet d'identifier les dérives, d'en comprendre les causes et de mettre en place des mesures correctives. C'est le cœur du contrôle de gestion.</p>
         </div>
       </div>
-    </div>
 
-  </div><!-- /exercices -->
+      <!-- FLASHCARDS -->
+      <div class="tab-content" id="tab-flashcards">
+        <div class="fiche-header">
+          <h2>🃏 Flashcards interactives</h2>
+          <p>Cliquez sur une carte pour révéler la définition. Testez vos connaissances !</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px" id="flashcardsGrid">
+          <!-- JS generated -->
+        </div>
+        <div style="text-align:center;margin-top:28px">
+          <button onclick="shuffleFlashcards()" style="background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.25);color:#60A5FA;padding:10px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(37,99,235,0.2)'" onmouseout="this.style.background='rgba(37,99,235,0.12)'">🔀 Mélanger les cartes</button>
+        </div>
+      </div>
 
-  <!-- VIDEO -->
-  <div id="tab-video" class="tab-content">
-    <div class="video-wrapper">
-      <div class="video-preview" onclick="alert('▶ Dans la version déployée, la vidéo se lancerait ici !')">
-        <div class="play-btn">▶</div>
+      <!-- CALCULATEUR -->
+      <div class="tab-content" id="tab-calculateur">
+        <div class="fiche-header">
+          <h2>🧮 Calculateur d'écarts budgétaires</h2>
+          <p>Saisissez vos valeurs pour calculer et analyser les écarts automatiquement</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px">
+            <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:20px">Écart sur Chiffre d'Affaires</h3>
+            <div class="ecart-calc">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div>
+                  <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">CA Réel (€)</label>
+                  <input type="number" id="caReel" placeholder="ex: 120000" oninput="calcCA()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+                </div>
+                <div>
+                  <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">CA Prévu (€)</label>
+                  <input type="number" id="caPrev" placeholder="ex: 100000" oninput="calcCA()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+                </div>
+              </div>
+              <div class="ecart-result" id="caResult">—</div>
+              <div id="caInterpret" style="font-size:0.82rem;color:var(--text-dim);margin-top:4px"></div>
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px">
+            <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:20px">Écart sur Charges</h3>
+            <div class="ecart-calc">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div>
+                  <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">Charges Réelles (€)</label>
+                  <input type="number" id="chargeReel" placeholder="ex: 85000" oninput="calcCharge()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+                </div>
+                <div>
+                  <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">Charges Prévues (€)</label>
+                  <input type="number" id="chargePrev" placeholder="ex: 80000" oninput="calcCharge()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+                </div>
+              </div>
+              <div class="ecart-result" id="chargeResult">—</div>
+              <div id="chargeInterpret" style="font-size:0.82rem;color:var(--text-dim);margin-top:4px"></div>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-top:20px">
+          <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:20px">Décomposition écart sur matières premières</h3>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr) repeat(2,1fr);gap:12px">
+            <div>
+              <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">Prix Réel (€/u)</label>
+              <input type="number" id="prixReel" placeholder="ex: 12" oninput="calcDecomp()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+            </div>
+            <div>
+              <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">Prix Prévu (€/u)</label>
+              <input type="number" id="prixPrev" placeholder="ex: 10" oninput="calcDecomp()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+            </div>
+            <div>
+              <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">Qté Réelle (u)</label>
+              <input type="number" id="qteReel" placeholder="ex: 500" oninput="calcDecomp()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+            </div>
+            <div>
+              <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px">Qté Prévue (u)</label>
+              <input type="number" id="qtePrev" placeholder="ex: 480" oninput="calcDecomp()" style="width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none">
+            </div>
+          </div>
+          <div id="decompResult" style="display:none;margin-top:20px;padding:16px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
+              <div><div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:4px">Écart sur Prix</div><div id="ecartPrix" class="ecart-result" style="font-size:1.1rem"></div></div>
+              <div style="display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--text-dim)">+</div>
+              <div><div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:4px">Écart sur Quantité</div><div id="ecartQte" class="ecart-result" style="font-size:1.1rem"></div></div>
+            </div>
+            <div style="text-align:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+              <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:4px">Écart Global</div>
+              <div id="ecartGlobal" class="ecart-result" style="font-size:1.3rem"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="video-meta">
-        <h4>Introduction à l'articulation budgétaire</h4>
-        <p>Durée : 12 min · Par Prof. Martin · Module 01 — Contrôle de gestion</p>
+
+      <!-- EXERCICES -->
+      <div class="tab-content" id="tab-exercices">
+        <div class="fiche-header">
+          <h2>✏️ Exercices d'entraînement</h2>
+          <p>Deux exercices progressifs pour consolider vos connaissances</p>
+        </div>
+
+        <div class="exercice-block">
+          <div class="exercice-header">
+            <span class="ex-badge">Exercice 1</span>
+            <span class="ex-level" style="background:rgba(16,185,129,0.1);color:#34D399;border-color:rgba(16,185,129,0.25)">Niveau : Fondamental</span>
+          </div>
+          <h3>Articulation des budgets chez TechCorp</h3>
+          <div class="enonce">
+            <p><strong>Contexte :</strong> La société TechCorp prévoit pour le mois de mars les données suivantes :</p>
+            <ul style="margin:12px 0 0 20px;line-height:2">
+              <li>Ventes prévues : <strong>1 200 unités</strong> à <strong>50 €</strong> l'unité</li>
+              <li>Stock initial de produits finis : <strong>100 unités</strong></li>
+              <li>Stock final souhaité : <strong>80 unités</strong></li>
+              <li>Chaque unité produite nécessite <strong>2 kg</strong> de matière première à <strong>8 €/kg</strong></li>
+              <li>Stock initial de matière : <strong>150 kg</strong> — Stock final souhaité : <strong>120 kg</strong></li>
+            </ul>
+            <p style="margin-top:12px"><strong>Questions :</strong></p>
+            <ol style="margin:8px 0 0 20px;line-height:2">
+              <li>Calculez le budget des ventes</li>
+              <li>Déterminez le programme de production</li>
+              <li>Calculez le budget des approvisionnements</li>
+            </ol>
+          </div>
+          <button class="btn-corrige" onclick="toggleCorrige('corrige1', this)">Voir le corrigé →</button>
+          <div class="corrige" id="corrige1">
+            <strong style="color:#34D399">1. Budget des ventes :</strong>
+            <p>CA prévisionnel = 1 200 × 50 = <strong>60 000 €</strong></p>
+            <br>
+            <strong style="color:#34D399">2. Programme de production :</strong>
+            <p>Production = Ventes + Stock final − Stock initial</p>
+            <p>Production = 1 200 + 80 − 100 = <strong>1 180 unités</strong></p>
+            <br>
+            <strong style="color:#34D399">3. Budget des approvisionnements :</strong>
+            <p>Besoins en matière = 1 180 × 2 = 2 360 kg</p>
+            <p>Achats = Besoins + Stock final − Stock initial</p>
+            <p>Achats = 2 360 + 120 − 150 = 2 330 kg</p>
+            <p>Budget approvisionnements = 2 330 × 8 = <strong>18 640 €</strong></p>
+          </div>
+        </div>
+
+        <div class="exercice-block">
+          <div class="exercice-header">
+            <span class="ex-badge">Exercice 2</span>
+            <span class="ex-level" style="background:rgba(245,158,11,0.1);color:#FCD34D;border-color:rgba(245,158,11,0.25)">Niveau : Intermédiaire</span>
+          </div>
+          <h3>Analyse des écarts chez ManuFab</h3>
+          <div class="enonce">
+            <p><strong>Contexte :</strong> La société ManuFab a budgété la production de 500 unités du produit Alpha avec les données suivantes :</p>
+            <ul style="margin:12px 0 0 20px;line-height:2">
+              <li>Consommation prévue de matière : <strong>3 kg/unité</strong> à <strong>10 €/kg</strong></li>
+              <li>Réellement, 520 unités ont été produites avec <strong>1 690 kg</strong> de matière à <strong>9,50 €/kg</strong></li>
+            </ul>
+            <p style="margin-top:12px"><strong>Questions :</strong></p>
+            <ol style="margin:8px 0 0 20px;line-height:2">
+              <li>Calculez l'écart global sur matière</li>
+              <li>Décomposez cet écart en écart sur prix et écart sur quantité</li>
+              <li>Interprétez les résultats</li>
+            </ol>
+          </div>
+          <button class="btn-corrige" onclick="toggleCorrige('corrige2', this)">Voir le corrigé →</button>
+          <div class="corrige" id="corrige2">
+            <strong style="color:#34D399">1. Écart global :</strong>
+            <p>Coût réel = 1 690 × 9,50 = 16 055 €</p>
+            <p>Coût prévu (recalculé pour 520 u) = 520 × 3 × 10 = 15 600 €</p>
+            <p>Écart global = 16 055 − 15 600 = <strong style="color:#F87171">+455 € (défavorable)</strong></p>
+            <br>
+            <strong style="color:#34D399">2. Décomposition :</strong>
+            <p><em>Écart sur prix</em> = (9,50 − 10) × 1 690 = <strong style="color:#34D399">−845 € (favorable)</strong></p>
+            <p><em>Écart sur quantité</em> = (1 690 − 1 560) × 10 = <strong style="color:#F87171">+1 300 € (défavorable)</strong></p>
+            <p>Vérification : −845 + 1 300 = +455 € ✓</p>
+            <br>
+            <strong style="color:#34D399">3. Interprétation :</strong>
+            <p>Le prix d'achat est favorable (−0,50 €/kg), mais la consommation de matière est excessive (130 kg supplémentaires). L'action corrective doit porter sur la gestion des pertes ou de la qualité en production.</p>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="synthese-card" style="margin-top:1.5rem">
-      <div class="synthese-body">
-        <h4>Au programme de cette vidéo</h4>
-        <ul>
-          <li>La logique de la chaîne budgétaire expliquée en schéma</li>
-          <li>Construction pas à pas d'un budget des ventes avec saisonnalité</li>
-          <li>Le budget de trésorerie : encaissements, décaissements et soldes</li>
-          <li>Cas pratique : entreprise industrielle sur 3 mois</li>
-        </ul>
+
+      <!-- VIDÉO -->
+      <div class="tab-content" id="tab-video">
+        <div class="fiche-header">
+          <h2>🎬 Vidéo explicative</h2>
+          <p>Une introduction claire aux concepts fondamentaux de l'articulation budgétaire</p>
+        </div>
+        <div class="video-section">
+          <div class="video-placeholder" id="videoPlaceholder">
+            <div class="video-play" onclick="showVideo()">▶</div>
+            <h3>Introduction à l'articulation budgétaire</h3>
+            <p>Durée estimée : 8–12 min · Niveau M1 Gestion de projet</p>
+          </div>
+          <div class="video-embed" id="videoEmbed">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Articulation budgétaire" allowfullscreen></iframe>
+          </div>
+          <p style="margin-top:20px;color:var(--text-muted);font-size:0.88rem;text-align:center">💡 Conseil : prenez des notes pendant le visionnage et relisez la fiche de synthèse après</p>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-top:28px">
+          <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:16px">📝 Points clés abordés dans la vidéo</h3>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:var(--accent-blue);font-size:0.85rem;font-weight:600">00:00</span><span style="font-size:0.88rem">Introduction et définition du budget prévisionnel</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:var(--accent-blue);font-size:0.85rem;font-weight:600">02:30</span><span style="font-size:0.88rem">La hiérarchie des budgets et leur articulation</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:var(--accent-blue);font-size:0.85rem;font-weight:600">05:00</span><span style="font-size:0.88rem">Calcul et interprétation des écarts budgétaires</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:var(--accent-blue);font-size:0.85rem;font-weight:600">08:00</span><span style="font-size:0.88rem">Application pratique sur un cas d'entreprise</span></div>
+          </div>
+        </div>
       </div>
+
+      <!-- QUIZ -->
+      <div class="tab-content" id="tab-quiz">
+        <div class="fiche-header">
+          <h2>🎯 Quiz rapide</h2>
+          <p>5 questions pour tester votre maîtrise de l'articulation budgétaire</p>
+        </div>
+        <div id="quizContainer"></div>
+        <div id="quizResult" style="display:none;text-align:center;padding:32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-top:20px">
+          <div style="font-size:3rem;margin-bottom:12px" id="quizEmoji"></div>
+          <div style="font-family:'DM Serif Display',serif;font-size:2rem;margin-bottom:8px" id="quizScore"></div>
+          <p id="quizMsg" style="color:var(--text-muted);margin-bottom:20px"></p>
+          <button onclick="resetQuiz()" style="background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);color:#60A5FA;padding:10px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.9rem">Recommencer le quiz</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- PREMIUM -->
-  <div id="tab-premium" class="tab-content">
+  <!-- PREMIUM BANNER -->
+  <div style="max-width:900px;margin:0 auto;padding:0 32px 80px">
     <div class="premium-banner">
       <div>
-        <div class="premium-title">Cours en présentiel — <span>Module Budgets</span></div>
-        <p class="premium-desc">Rejoignez une session de travaux dirigés en petit groupe avec notre professeur expert en contrôle de gestion. Approfondissez l'articulation budgétaire avec des cas d'entreprise réels.</p>
-        <ul class="premium-features">
-          <li>Session de 2h en présentiel (campus ou visio)</li>
-          <li>Cas concret sur une entreprise industrielle</li>
-          <li>Correction individualisée de vos exercices</li>
-          <li>Support de cours complémentaire</li>
-          <li>Accès au forum Q&R du module</li>
-        </ul>
+        <h3>👨‍🏫 Allez plus loin avec le Premium</h3>
+        <p>Séances en physique avec un professeur expert — correction personnalisée de vos exercices — cas réels d'entreprise</p>
       </div>
-      <div class="premium-cta">
-        <div class="price-display">
-          <div class="price-amount">29€</div>
-          <div class="price-label" style="color:rgba(255,255,255,0.4)">ce module</div>
+      <a href="paiement.html" class="btn btn-premium">Accéder au Premium — 49€</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">Plan<span>Control</span> Academy</div>
+      <p>Plateforme de formation — Projet académique M1</p>
+      <div class="footer-links">
+        <a href="cours-budget.html">Budget</a>
+        <a href="cours-gantt.html">Gantt</a>
+        <a href="cours-mpm.html">MPM</a>
+        <a href="paiement.html">Premium</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- TABS ---
+    const tabs = ['fiche','flashcards','calculateur','exercices','video','quiz'];
+    const tabProgress = { fiche:20, flashcards:40, calculateur:60, exercices:80, video:90, quiz:100 };
+    let visited = new Set(['fiche']);
+
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-'+id).classList.add('active');
+      btn.classList.add('active');
+      visited.add(id);
+      updateProgress();
+      if(id==='flashcards') renderFlashcards();
+      if(id==='quiz') initQuiz();
+    }
+
+    function updateProgress() {
+      const maxPct = Math.max(...[...visited].map(t => tabProgress[t] || 0));
+      document.getElementById('progressBar').style.width = maxPct+'%';
+      document.getElementById('progressPct').textContent = maxPct+'%';
+    }
+
+    // --- VIDEO ---
+    function showVideo() {
+      document.getElementById('videoPlaceholder').style.display = 'none';
+      document.getElementById('videoEmbed').classList.add('show');
+    }
+
+    // --- CORRIGÉ ---
+    function toggleCorrige(id, btn) {
+      const el = document.getElementById(id);
+      el.classList.toggle('show');
+      btn.textContent = el.classList.contains('show') ? 'Masquer le corrigé ↑' : 'Voir le corrigé →';
+    }
+
+    // --- FLASHCARDS ---
+    const flashcardsData = [
+      { q:'Budget prévisionnel', a:'Expression chiffrée des objectifs et des moyens d\'une organisation sur une période future (généralement un an).' },
+      { q:'Écart budgétaire', a:'Différence entre la valeur réelle et la valeur prévue. Formule : Écart = Réel − Prévu.' },
+      { q:'Écart sur prix', a:'Mesure l\'impact de la variation du prix : (Prix réel − Prix prévu) × Quantité réelle.' },
+      { q:'Écart sur quantité', a:'Mesure l\'impact de la variation de volume : (Qté réelle − Qté prévue) × Prix prévu.' },
+      { q:'Budget des ventes', a:'Premier budget élaboré. Il détermine les autres. Calculé par : Volume prévu × Prix de vente unitaire.' },
+      { q:'Programme de production', a:'Production = Ventes prévues + Stock final souhaité − Stock initial.' },
+      { q:'Budget de trésorerie', a:'Récapitule tous les encaissements et décaissements prévisionnels. Permet de gérer la liquidité.' },
+      { q:'Contrôle de gestion', a:'Ensemble de pratiques visant à assurer la mise en œuvre de la stratégie par le pilotage de la performance.' },
+    ];
+
+    let shuffled = [...flashcardsData];
+
+    function renderFlashcards() {
+      const grid = document.getElementById('flashcardsGrid');
+      grid.innerHTML = shuffled.map((fc, i) => `
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front"><div><p>${fc.q}</p><p class="fc-hint">Cliquez pour révéler ↓</p></div></div>
+            <div class="flashcard-back"><p>${fc.a}</p></div>
+          </div>
         </div>
-        <a href="paiement.html?module=budget" class="btn-primary" style="margin-top:1rem">S'inscrire →</a>
-      </div>
-    </div>
-  </div>
+      `).join('');
+    }
 
-</div><!-- /container -->
+    function shuffleFlashcards() {
+      shuffled = shuffled.sort(() => Math.random() - 0.5);
+      renderFlashcards();
+    }
 
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">Plan<span>Control</span> — Formation Master 1</div>
-    <div class="footer-links">
-      <a href="index.html">Accueil</a>
-      <a href="cours-gantt.html">Module GANTT →</a>
-    </div>
-    <div class="footer-copy">© 2025 PlanControl</div>
-  </div>
-</footer>
+    // --- CALCULATEUR ---
+    function formatEcart(val, typeCA=false) {
+      if(isNaN(val)) return '—';
+      const favorable = typeCA ? val > 0 : val < 0;
+      const cls = favorable ? 'favorable' : 'defavorable';
+      const sign = val > 0 ? '+' : '';
+      const label = favorable ? '✅ Favorable' : '⚠️ Défavorable';
+      return `<span class="${cls}">${sign}${val.toLocaleString('fr-FR')} € — ${label}</span>`;
+    }
 
-<script>
-function switchTab(id, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  btn.classList.add('active');
-}
-function toggleEx(id) {
-  document.getElementById(id).classList.toggle('open');
-}
-function toggleCorrection(id) {
-  document.getElementById(id).classList.toggle('visible');
-}
-</script>
+    function calcCA() {
+      const reel = parseFloat(document.getElementById('caReel').value);
+      const prev = parseFloat(document.getElementById('caPrev').value);
+      if(!isNaN(reel) && !isNaN(prev)) {
+        const ecart = reel - prev;
+        document.getElementById('caResult').innerHTML = formatEcart(ecart, true);
+        const pct = ((ecart/prev)*100).toFixed(1);
+        document.getElementById('caInterpret').textContent = `Soit ${pct > 0 ? '+':''}${pct}% par rapport au prévisionnel`;
+      }
+    }
+
+    function calcCharge() {
+      const reel = parseFloat(document.getElementById('chargeReel').value);
+      const prev = parseFloat(document.getElementById('chargePrev').value);
+      if(!isNaN(reel) && !isNaN(prev)) {
+        const ecart = reel - prev;
+        document.getElementById('chargeResult').innerHTML = formatEcart(ecart, false);
+        const pct = ((ecart/prev)*100).toFixed(1);
+        document.getElementById('chargeInterpret').textContent = `Soit ${pct > 0 ? '+':''}${pct}% par rapport au prévisionnel`;
+      }
+    }
+
+    function calcDecomp() {
+      const pr = parseFloat(document.getElementById('prixReel').value);
+      const pp = parseFloat(document.getElementById('prixPrev').value);
+      const qr = parseFloat(document.getElementById('qteReel').value);
+      const qp = parseFloat(document.getElementById('qtePrev').value);
+      if(!isNaN(pr)&&!isNaN(pp)&&!isNaN(qr)&&!isNaN(qp)) {
+        const eP = (pr - pp) * qr;
+        const eQ = (qr - qp) * pp;
+        const eG = eP + eQ;
+        document.getElementById('ecartPrix').innerHTML = formatEcart(eP, false);
+        document.getElementById('ecartQte').innerHTML = formatEcart(eQ, false);
+        document.getElementById('ecartGlobal').innerHTML = formatEcart(eG, false);
+        document.getElementById('decompResult').style.display = 'block';
+      }
+    }
+
+    // --- QUIZ ---
+    const quizData = [
+      { q:'Quelle est la formule de l\'écart budgétaire ?', opts:['Prévu − Réel','Réel − Prévu','Réel × Prévu','Réel / Prévu'], ans:1 },
+      { q:'Le budget des ventes est généralement élaboré :', opts:['En dernier','En premier','Simultanément aux autres','Après la trésorerie'], ans:1 },
+      { q:'Un écart sur charges de +5 000 € est :', opts:['Favorable','Défavorable','Neutre','Impossible à dire'], ans:1 },
+      { q:'La formule du programme de production est :', opts:['Ventes + Stock initial − Stock final','Ventes − Stock initial + Stock final','Ventes + Stock final − Stock initial','Stock final − Stock initial'], ans:2 },
+      { q:'L\'écart sur prix est calculé ainsi :', opts:['(Qté réelle − Qté prévue) × Prix prévu','(Prix réel − Prix prévu) × Qté réelle','(Prix réel − Prix prévu) × Qté prévue','Prix réel × Qté réelle − Prix prévu × Qté prévue'], ans:1 },
+    ];
+
+    let quizAnswered = 0;
+    let quizScore = 0;
+
+    function initQuiz() {
+      const container = document.getElementById('quizContainer');
+      if(container.innerHTML && quizAnswered < quizData.length) return;
+      quizAnswered = 0; quizScore = 0;
+      document.getElementById('quizResult').style.display = 'none';
+      container.innerHTML = quizData.map((q, qi) => `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px">
+          <p style="font-weight:600;margin-bottom:16px;font-size:0.95rem"><span style="color:var(--accent-blue);margin-right:8px">${qi+1}.</span>${q.q}</p>
+          ${q.opts.map((opt, oi) => `<div class="quiz-option" data-qi="${qi}" data-oi="${oi}" onclick="answerQuiz(${qi},${oi},${q.ans},this)">${opt}</div>`).join('')}
+        </div>
+      `).join('');
+    }
+
+    function answerQuiz(qi, oi, ans, el) {
+      const siblings = document.querySelectorAll(`[data-qi="${qi}"]`);
+      siblings.forEach(s => s.classList.add('disabled'));
+      if(oi === ans) { el.classList.add('correct'); quizScore++; }
+      else { el.classList.add('wrong'); siblings[ans].classList.add('correct'); }
+      quizAnswered++;
+      if(quizAnswered === quizData.length) {
+        setTimeout(() => {
+          const res = document.getElementById('quizResult');
+          const pct = quizScore / quizData.length;
+          document.getElementById('quizEmoji').textContent = pct >= 0.8 ? '🎉' : pct >= 0.6 ? '👍' : '📚';
+          document.getElementById('quizScore').textContent = quizScore + ' / ' + quizData.length;
+          document.getElementById('quizMsg').textContent = pct >= 0.8 ? 'Excellent ! Vous maîtrisez l\'articulation budgétaire.' : pct >= 0.6 ? 'Bien ! Relisez les points sur les écarts pour consolider.' : 'Continuez à travailler — relisez la fiche de synthèse.';
+          res.style.display = 'block';
+        }, 600);
+      }
+    }
+
+    function resetQuiz() {
+      document.getElementById('quizContainer').innerHTML = '';
+      initQuiz();
+    }
+  </script>
 </body>
 </html>
