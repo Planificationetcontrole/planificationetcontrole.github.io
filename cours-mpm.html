@@ -311,7 +311,7 @@
             <p>Durée estimée : 12–15 min · Calculs détaillés et exemples</p>
           </div>
           <div class="video-embed" id="videoEmbed">
-            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Méthode MPM" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/H4tbUuHdj1s" title="Méthode MPM" allowfullscreen></iframe>
           </div>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-top:28px">
@@ -556,6 +556,12 @@
   }
   window.addEventListener('resize',resizeCanvas);
   setTimeout(()=>{resizeCanvas();loadExampleFull();},100);
+// --- INIT au chargement de la page ---
+  window.addEventListener('DOMContentLoaded', () => {
+    renderFlashcards();
+    renderGantt();
+    initQuiz();
+  });
 </script>
 </body>
 </html>
