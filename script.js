@@ -113,9 +113,9 @@
 
   // -------- Bouton "remplir avec données de test" --------
   testFillBtn.addEventListener('click', () => {
-    cardNumberInput.value = '4242 4242 4242 4242';
-    nameInput.value = 'Jean Dupont';
-    expiryInput.value = '12/30';
+    cardNumberInput.value = '5131 3066 0518 8745';
+    nameInput.value = 'Thomas Cosnier';
+    expiryInput.value = '04/27';
     cvvInput.value = '123';
 
     updateCardNumberDisplay(cardNumberInput.value);
