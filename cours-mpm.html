@@ -555,13 +555,7 @@
     if(graphData) drawGraph();
   }
   window.addEventListener('resize',resizeCanvas);
-  setTimeout(()=>{resizeCanvas();loadExampleFull();},100);
-// --- INIT au chargement de la page ---
-  window.addEventListener('DOMContentLoaded', () => {
-    renderFlashcards();
-    renderGantt();
-    initQuiz();
-  });
+  setTimeout(()=>{resizeCanvas();loadExampleFull();initQuiz();},100);
 </script>
 </body>
 </html>
