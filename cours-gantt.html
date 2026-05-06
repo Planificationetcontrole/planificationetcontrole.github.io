@@ -332,7 +332,7 @@
             <p>Durée : 6 min · Avec exemples pratiques</p>
           </div>
           <div class="video-embed" id="videoEmbed">
-            <iframe src="https://www.youtube.com/watch?v=T4u-Fw3uAbc" title="Diagramme de Gantt" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/T4u-Fw3uAbc" title="Diagramme de Gantt" allowfullscreen></iframe>
           </div>
         </div>
       </div>
@@ -517,6 +517,13 @@
     }
   }
   function resetQuiz(){document.getElementById('quizContainer').innerHTML='';initQuiz();}
+
+// --- INIT au chargement de la page ---
+  window.addEventListener('DOMContentLoaded', () => {
+    renderFlashcards();
+    renderGantt();
+    initQuiz();
+  });
 </script>
 </body>
 </html>
