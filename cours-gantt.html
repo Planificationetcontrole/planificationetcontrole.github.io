@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matrice GANTT — PlanControl Academy</title>
+  <title>Matrice GANTT — Master SIC Academy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -73,27 +73,6 @@
     </div>
   </header>
 
-  <div style="max-width:900px;margin:0 auto;padding:0 32px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:0.82rem;color:var(--text-muted)">Progression du cours</span>
-      <span id="progressPct" style="font-size:0.82rem;color:#34D399;font-weight:600">0%</span>
-    </div>
-    <div class="progress-bar-container">
-      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
-    </div>
-  </div>
-
-  <div class="course-page">
-    <div class="course-tabs-wrapper">
-      <div class="tabs" id="courseTabs">
-        <button class="tab-btn active" onclick="switchTab('fiche',this)">📄 Fiche de synthèse</button>
-        <button class="tab-btn" onclick="switchTab('flashcards',this)">🃏 Flashcards</button>
-        <button class="tab-btn" onclick="switchTab('constructeur',this)">🏗️ Constructeur Gantt</button>
-        <button class="tab-btn" onclick="switchTab('exercices',this)">✏️ Exercices</button>
-        <button class="tab-btn" onclick="switchTab('video',this)">🎬 Vidéo</button>
-        <button class="tab-btn" onclick="switchTab('quiz',this)">🎯 Quiz rapide</button>
-      </div>
-    </div>
 
     <div class="course-content">
 
@@ -105,7 +84,7 @@
         </div>
 
         <div class="fiche-section">
-          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">1</span>Définition et utilité</h3>
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">1. </span>Définition et utilité</h3>
           <p>Le <strong>diagramme de Gantt</strong>, inventé par Henry Gantt (1910), est un outil graphique de planification et de suivi de projet. Il représente :</p>
           <ul class="fiche-list">
             <li>Les <strong>tâches</strong> du projet sur l'axe vertical</li>
@@ -114,9 +93,9 @@
             <li>L'<strong>avancement</strong> réel par rapport au planifié</li>
           </ul>
         </div>
-
+        <br>
         <div class="fiche-section">
-          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">2</span>Les types de liaisons entre tâches</h3>
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">2. </span>Les types de liaisons entre tâches</h3>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
               <strong style="color:#34D399;font-size:0.85rem">FD — Fin-Début</strong>
@@ -145,9 +124,9 @@
             </div>
           </div>
         </div>
-
+        <br>
         <div class="fiche-section">
-          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">3</span>Notions de marges</h3>
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">3. </span>Notions de marges</h3>
           <div style="background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.2);border-radius:12px;padding:20px;margin-top:12px">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
               <div>
@@ -163,9 +142,9 @@
             </div>
           </div>
         </div>
-
+        <br>
         <div class="fiche-section">
-          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">4</span>Le chemin critique</h3>
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">4. </span>Le chemin critique</h3>
           <p>Le <strong>chemin critique</strong> est la séquence de tâches dont la durée cumulée est la plus longue. Il détermine la durée minimale du projet.</p>
           <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px;margin-top:12px">
             <strong style="color:#F87171;font-size:0.88rem">⚠️ Propriétés du chemin critique :</strong>
@@ -177,9 +156,9 @@
             </ul>
           </div>
         </div>
-
+        <br>
         <div class="fiche-section">
-          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">5</span>Étapes de construction d'un Gantt</h3>
+          <h3><span class="fiche-num" style="background:rgba(5,150,105,0.2);color:#34D399">5. </span>Étapes de construction d'un Gantt</h3>
           <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
             <div style="display:flex;align-items:flex-start;gap:14px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
               <span style="width:28px;height:28px;background:rgba(5,150,105,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#34D399;flex-shrink:0;font-size:0.82rem">1</span>
@@ -209,7 +188,7 @@
           <p style="margin-top:8px;font-size:0.9rem;color:var(--text-muted)">Le Gantt est un outil de communication autant que de planification. Un bon Gantt est lisible en un coup d'œil et permet à toute l'équipe de savoir où en est le projet.</p>
         </div>
       </div>
-
+      <br>
       <!-- FLASHCARDS -->
       <div class="tab-content" id="tab-flashcards">
         <div class="fiche-header">
@@ -221,7 +200,7 @@
           <button onclick="shuffleFlashcards()" style="background:rgba(5,150,105,0.12);border:1px solid rgba(5,150,105,0.25);color:#34D399;padding:10px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s">🔀 Mélanger les cartes</button>
         </div>
       </div>
-
+      <br>
       <!-- CONSTRUCTEUR GANTT -->
       <div class="tab-content" id="tab-constructeur">
         <div class="fiche-header">
@@ -251,7 +230,7 @@
           <strong style="font-size:0.82rem;color:#34D399">💡 Durée totale détectée : <span id="ganttDuration">—</span></strong>
         </div>
       </div>
-
+      <br>
       <!-- EXERCICES -->
       <div class="tab-content" id="tab-exercices">
         <div class="fiche-header">
@@ -301,7 +280,7 @@
             <p style="color:var(--text-muted);font-size:0.85rem;margin-top:6px">La tâche B a une marge de 1 semaine (peut débuter en S3 ou S4 sans impact).</p>
           </div>
         </div>
-
+        <br>
         <div class="exercice-block">
           <div class="exercice-header">
             <span class="ex-badge" style="background:rgba(5,150,105,0.15);border-color:rgba(5,150,105,0.3);color:#34D399">Exercice 2</span>
@@ -339,7 +318,7 @@
           </div>
         </div>
       </div>
-
+      <br>
       <!-- VIDÉO -->
       <div class="tab-content" id="tab-video">
         <div class="fiche-header">
@@ -350,23 +329,14 @@
           <div class="video-placeholder" id="videoPlaceholder">
             <div class="video-play" onclick="showVideo()" style="background:var(--accent-green)">▶</div>
             <h3>Construire et lire un diagramme de Gantt</h3>
-            <p>Durée estimée : 10–14 min · Avec exemples pratiques</p>
+            <p>Durée : 6 min · Avec exemples pratiques</p>
           </div>
           <div class="video-embed" id="videoEmbed">
-            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Diagramme de Gantt" allowfullscreen></iframe>
-          </div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-top:28px">
-          <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:16px">📝 Points clés abordés dans la vidéo</h3>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">00:00</span><span style="font-size:0.88rem">Historique et définition du diagramme de Gantt</span></div>
-            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">03:00</span><span style="font-size:0.88rem">Construction pas à pas avec un exemple concret</span></div>
-            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">07:00</span><span style="font-size:0.88rem">Identification du chemin critique et des marges</span></div>
-            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px"><span style="color:#34D399;font-size:0.85rem;font-weight:600">11:00</span><span style="font-size:0.88rem">Suivi d'avancement et gestion des retards</span></div>
+            <iframe src="https://www.youtube.com/watch?v=T4u-Fw3uAbc" title="Diagramme de Gantt" allowfullscreen></iframe>
           </div>
         </div>
       </div>
-
+      <br>
       <!-- QUIZ -->
       <div class="tab-content" id="tab-quiz">
         <div class="fiche-header">
@@ -389,7 +359,7 @@
     <div class="premium-banner">
       <div>
         <h3>👨‍🏫 Allez plus loin avec le Premium</h3>
-        <p>Séances en physique avec un professeur expert — correction personnalisée — cas réels d'entreprise</p>
+        <p>Séances en physique avec un professeur expert : correction personnalisée & cas réels d'entreprise</p>
       </div>
       <a href="paiement.html" class="btn btn-premium">Accéder au Premium — 49€</a>
     </div>
@@ -397,7 +367,7 @@
 
   <footer class="footer">
     <div class="footer-inner">
-      <div class="footer-logo">Plan<span>Control</span> Academy</div>
+      <div class="footer-logo">Master<span> SIC</span> Academy</div>
       <p>Plateforme de formation — Projet académique M1</p>
       <div class="footer-links">
         <a href="cours-budget.html">Budget</a>
