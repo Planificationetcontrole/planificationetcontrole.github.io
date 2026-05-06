@@ -363,7 +363,7 @@
             <p>Durée : 20 min · L'articulation des différents budgets</p>
           </div>
           <div class="video-embed" id="videoEmbed">
-            <iframe src="https://www.youtube.com/watch?v=Q_Z_flg7NOo" title="Articulation budgétaire" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/Q_Z_flg7NOo" title="Articulation budgétaire" allowfullscreen></iframe>
           </div>
           <p style="margin-top:20px;color:var(--text-muted);font-size:0.88rem;text-align:center">💡 Conseil : prenez des notes pendant le visionnage et relisez la fiche de synthèse après</p>
         </div>
@@ -573,6 +573,12 @@
       document.getElementById('quizContainer').innerHTML = '';
       initQuiz();
     }
+    // --- INIT au chargement de la page ---
+  window.addEventListener('DOMContentLoaded', () => {
+    renderFlashcards();
+    renderGantt();
+    initQuiz();
+  });
   </script>
 </body>
 </html>
