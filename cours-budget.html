@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Articulation Budgétaire — Master SIC Academy</title>
+  <title>Articulation Budgétaire — PlanControl Academy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -44,7 +44,7 @@
 
   <nav class="navbar">
     <div class="nav-inner">
-      <a href="index.html" class="logo">Master<span> SIC</span> Academy</a>
+      <a href="index.html" class="logo">Plan<span>Control</span> Academy</a>
       <ul class="nav-links">
         <li><a href="index.html#cours">← Tous les cours</a></li>
         <li><a href="cours-gantt.html">Gantt</a></li>
@@ -63,7 +63,7 @@
         <span>Articulation Budgétaire</span>
       </div>
       <div class="course-header-badges">
-        <span class="hero-badge" style="background:rgba(37,99,235,0.15);border-color:rgba(37,99,235,0.3);color:#60A5FA">Module 01 · Budget</span>
+        <span class="hero-badge" style="background:rgba(37,99,235,0.15);border-color:rgba(37,99,235,0.3);color:#60A5FA">Module 01 · Finance</span>
         <span class="hero-badge" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:#34D399">Accès libre</span>
       </div>
       <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,5vw,3.8rem);letter-spacing:-2px;line-height:1.1;margin:16px 0 20px">Articulation<br><em style="color:#60A5FA">Budgétaire</em></h1>
@@ -78,6 +78,32 @@
     </div>
   </header>
 
+  <!-- PROGRESS -->
+  <div style="max-width:900px;margin:0 auto;padding:0 32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:0.82rem;color:var(--text-muted)">Progression du cours</span>
+      <span id="progressPct" style="font-size:0.82rem;color:#60A5FA;font-weight:600">0%</span>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="course-page">
+    <div class="course-tabs-wrapper">
+      <div class="tabs" id="courseTabs">
+        <button class="tab-btn active" onclick="switchTab('fiche',this)" data-tab="fiche">📄 Fiche de synthèse</button>
+        <button class="tab-btn" onclick="switchTab('flashcards',this)" data-tab="flashcards">🃏 Flashcards</button>
+        <button class="tab-btn" onclick="switchTab('calculateur',this)" data-tab="calculateur">🧮 Calculateur</button>
+        <button class="tab-btn" onclick="switchTab('exercices',this)" data-tab="exercices">✏️ Exercices</button>
+        <button class="tab-btn" onclick="switchTab('video',this)" data-tab="video">🎬 Vidéo</button>
+        <button class="tab-btn" onclick="switchTab('quiz',this)" data-tab="quiz">🎯 Quiz rapide</button>
+      </div>
+    </div>
+
+    <div class="course-content">
+
       <!-- FICHE DE SYNTHÈSE -->
       <div class="tab-content active" id="tab-fiche">
         <div class="fiche-header">
@@ -86,7 +112,7 @@
         </div>
 
         <div class="fiche-section">
-          <h3><span class="fiche-num">1.</span> Qu'est-ce qu'un budget prévisionnel ?</h3>
+          <h3><span class="fiche-num">1</span>Qu'est-ce qu'un budget prévisionnel ?</h3>
           <p>Un <strong>budget prévisionnel</strong> est une expression chiffrée des objectifs et des moyens d'une organisation sur une période future (généralement un an). Il constitue le principal outil du <strong>contrôle de gestion</strong> en permettant :</p>
           <ul class="fiche-list">
             <li>La <strong>planification</strong> des activités et des ressources</li>
@@ -95,9 +121,9 @@
             <li>La <strong>motivation</strong> des équipes via des objectifs clairs</li>
           </ul>
         </div>
-        <br>
+
         <div class="fiche-section">
-          <h3><span class="fiche-num">2. </span>Hiérarchie et articulation des budgets</h3>
+          <h3><span class="fiche-num">2</span>Hiérarchie et articulation des budgets</h3>
           <p>Les budgets s'articulent de façon hiérarchique. Le budget général d'une entreprise se décompose en budgets fonctionnels :</p>
           <div class="schéma-budget">
             <div class="schema-box"><strong>Budget des Ventes</strong><span>Volume × Prix</span></div>
@@ -108,9 +134,9 @@
           </div>
           <p style="margin-top:12px">Ces budgets alimentent ensuite le <strong>budget de trésorerie</strong>, puis les <strong>états financiers prévisionnels</strong> (compte de résultat, bilan).</p>
         </div>
-        <br>
+
         <div class="fiche-section">
-          <h3><span class="fiche-num">3. </span>Les types d'écarts budgétaires</h3>
+          <h3><span class="fiche-num">3</span>Les types d'écarts budgétaires</h3>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
             <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:18px">
               <strong style="color:#34D399;font-size:0.85rem">✅ ÉCART FAVORABLE</strong>
@@ -126,9 +152,9 @@
             <p style="font-family:'DM Serif Display',serif;font-size:1.15rem;margin-top:8px;text-align:center">Écart = Valeur Réelle − Valeur Prévisionnelle</p>
           </div>
         </div>
-        <br>
+
         <div class="fiche-section">
-          <h3><span class="fiche-num">4. </span>Décomposition de l'écart sur charges</h3>
+          <h3><span class="fiche-num">4</span>Décomposition de l'écart sur charges</h3>
           <p>L'écart global sur charges se décompose en deux sous-écarts :</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
@@ -143,9 +169,9 @@
             </div>
           </div>
         </div>
-        <br>
+
         <div class="fiche-section">
-          <h3><span class="fiche-num">5. </span>Le cycle budgétaire</h3>
+          <h3><span class="fiche-num">5</span>Le cycle budgétaire</h3>
           <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">
             <div style="display:flex;align-items:center;gap:16px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border)">
               <span style="width:32px;height:32px;background:rgba(37,99,235,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#60A5FA;flex-shrink:0;font-size:0.85rem">1</span>
@@ -171,7 +197,7 @@
           <p style="margin-top:8px;font-size:0.9rem;color:var(--text-muted)">Un budget n'est utile que s'il est suivi. L'analyse des écarts permet d'identifier les dérives, d'en comprendre les causes et de mettre en place des mesures correctives. C'est le cœur du contrôle de gestion.</p>
         </div>
       </div>
-      <br>
+
       <!-- FLASHCARDS -->
       <div class="tab-content" id="tab-flashcards">
         <div class="fiche-header">
